@@ -1,593 +1,284 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
+<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Job Hunt Report — Ruthika C</title>
+<title>Ruthika C — Fresh logistics and supply-chain jobs</title>
 <style>
-  :root{
-    --navy:#0f2a4a; --navy2:#153a63; --gold:#b8862f; --gold2:#d9a441;
-    --ink:#1c2530; --muted:#5b6773; --line:#e3e8ee; --bg:#f6f8fb;
-    --strong:#0e7c3f; --good:#2e7d32; --possible:#b8860b; --stretch:#a13d3d;
-    --card:#ffffff;
-  }
-  *{box-sizing:border-box;}
-  body{margin:0;font-family:'Segoe UI',Calibri,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.55;}
-  .wrap{max-width:1180px;margin:0 auto;padding:0 24px 80px;}
-  header.hero{background:linear-gradient(135deg,var(--navy) 0%,var(--navy2) 60%,#1c4a78 100%);color:#fff;padding:48px 24px 40px;}
-  header.hero .inner{max-width:1180px;margin:0 auto;}
-  header.hero h1{margin:0 0 6px;font-size:2.1em;letter-spacing:.2px;}
-  header.hero .sub{color:#cfe0f2;font-size:1.05em;margin-bottom:22px;}
-  .chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px;}
-  .chip{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);padding:7px 14px;border-radius:20px;font-size:.88em;}
-  .chip.gold{background:rgba(217,164,65,.2);border-color:var(--gold2);color:#ffe6b0;}
-  section{margin-top:44px;}
-  h2{font-size:1.5em;color:var(--navy);border-bottom:3px solid var(--gold2);display:inline-block;padding-bottom:6px;margin-bottom:18px;}
-  h3{color:var(--navy2);margin-top:0;margin-bottom:8px;font-size:1.18em;}
-  p{color:var(--ink);}
-  .muted{color:var(--muted);}
-  .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:20px 24px;box-shadow:0 1px 3px rgba(20,40,70,.06);}
-  a{color:var(--navy2);text-decoration:none;font-weight:600;}
-  a:hover{text-decoration:underline;}
-  .badge{display:inline-block;padding:3px 10px;border-radius:12px;font-size:.76em;font-weight:700;color:#fff;letter-spacing:.3px;}
-  .b-high{background:var(--strong);}
-  .b-med{background:var(--possible);}
-  .b-mh{background:#3a7d55;}
-  .tag{display:inline-block;background:#eef2f7;color:var(--navy2);padding:2px 8px;border-radius:6px;font-size:.78em;margin:1px 4px 1px 0;}
-  .filters{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 26px;}
-  .filter-btn{background:#fff;border:1px solid var(--line);color:var(--navy2);padding:8px 16px;border-radius:20px;font-size:.88em;font-weight:600;cursor:pointer;transition:all .15s;}
-  .filter-btn:hover{background:#eef4fb;}
-  .filter-btn.active{background:var(--navy);color:#fff;border-color:var(--navy);}
-  .job-grid{display:grid;grid-template-columns:1fr;gap:18px;}
-  .job-card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:22px 26px;box-shadow:0 1px 3px rgba(20,40,70,.06);}
-  .job-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap;margin-bottom:10px;}
-  .job-title{font-size:1.2em;color:var(--navy);font-weight:700;margin:0 0 2px;}
-  .job-company{color:var(--navy2);font-weight:600;}
-  .job-meta{color:var(--muted);font-size:.88em;margin-top:4px;}
-  .why{background:#f4f8fc;border-left:4px solid var(--navy2);border-radius:6px;padding:12px 16px;margin:12px 0;font-size:.93em;}
-  .why b{color:var(--navy);}
-  .email-body{white-space:pre-wrap;background:#fffdf6;border:1px dashed #d8c584;border-radius:8px;padding:14px 16px;font-family:Georgia,'Times New Roman',serif;font-size:.92em;margin-top:10px;}
-  .actions{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;}
-  .btn{border:none;border-radius:8px;padding:10px 18px;font-size:.88em;font-weight:700;cursor:pointer;}
-  .btn-copy{background:var(--navy);color:#fff;}
-  .btn-copy:hover{background:var(--navy2);}
-  .btn-mail{background:var(--gold2);color:#3a2900;}
-  .btn-mail:hover{background:var(--gold);}
-  .btn-apply{background:#fff;color:var(--navy2);border:1.5px solid var(--navy2);}
-  .btn-apply:hover{background:#eef4fb;}
-  .copied{color:var(--strong);font-weight:700;font-size:.85em;margin-left:6px;display:none;}
-  .hremail{font-family:Consolas,monospace;background:#eef7ee;color:var(--strong);padding:2px 8px;border-radius:5px;font-weight:700;}
-  .noemail{font-style:italic;color:var(--muted);}
-  table{width:100%;border-collapse:collapse;margin:14px 0 24px;font-size:.92em;background:var(--card);border-radius:8px;overflow:hidden;box-shadow:0 1px 3px rgba(20,40,70,.06);}
-  thead th{background:var(--navy);color:#fff;text-align:left;padding:10px 12px;font-weight:600;}
-  tbody td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top;}
-  tbody tr:nth-child(even){background:#fafbfd;}
-  .flag{background:#fdecec;border-left:4px solid var(--stretch);padding:14px 18px;border-radius:6px;margin-bottom:12px;font-size:.93em;}
-  .note{background:#eef7ee;border-left:4px solid var(--strong);padding:14px 18px;border-radius:6px;margin-bottom:16px;font-size:.93em;}
-  .toc{display:flex;flex-wrap:wrap;gap:8px 18px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px 20px;margin-top:26px;font-size:.9em;}
-  footer{margin-top:60px;padding-top:24px;border-top:1px solid var(--line);color:var(--muted);font-size:.85em;}
-  .small{font-size:.85em;color:var(--muted);}
-  span[data-cat]{}
+:root{--bg:#eef3f1;--surface:#fff;--surface2:#e3ebe8;--ink:#122320;--muted:#4c605a;--border:#cfdbd6;--accent:#157a5f;--accent2:#0d5c47;--soft:#d8ede4;--warn:#a15c00;--warnsoft:#fff1d7;--bad:#9b3030;--badsoft:#fde8e8;--shadow:0 1px 2px rgba(18,35,32,.06),0 8px 24px -12px rgba(18,35,32,.14)}
+@media(prefers-color-scheme:dark){:root{--bg:#0e1613;--surface:#151f1c;--surface2:#1b2723;--ink:#e9f2ee;--muted:#9db2ab;--border:#2a3733;--accent:#3fcd9a;--accent2:#8fe9c8;--soft:#173229;--warn:#f2bd66;--warnsoft:#352715;--bad:#ff9c9c;--badsoft:#3a1e1e;--shadow:0 1px 2px #0008,0 8px 24px -12px #000b}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "IBM Plex Sans",ui-sans-serif,system-ui,sans-serif;padding:0 20px 90px}a{color:var(--accent2);font-weight:600;text-decoration:none}a:hover{text-decoration:underline}.wrap{max-width:980px;margin:auto}.mono{font-family:"IBM Plex Mono",ui-monospace,monospace}header{padding:54px 0 28px;border-bottom:1px solid var(--border)}.eyebrow,.kicker{font:600 12px/1.2 "IBM Plex Mono",monospace;letter-spacing:.09em;text-transform:uppercase;color:var(--accent2)}.eyebrow:before{content:"";display:inline-block;width:7px;height:7px;background:var(--accent);border-radius:50%;margin-right:8px}h1{font-size:clamp(28px,4vw,42px);line-height:1.1;margin:14px 0 10px;letter-spacing:-.02em}.lede{font-size:17px;color:var(--muted);max-width:70ch;margin:0}.chips{display:flex;gap:7px;flex-wrap:wrap;margin-top:18px}.chip{border:1px solid var(--border);background:var(--surface);border-radius:99px;padding:5px 10px;font:12px "IBM Plex Mono",monospace;color:var(--muted)}nav{display:flex;gap:7px;flex-wrap:wrap;padding:16px 0 0}nav a{border:1px solid var(--border);background:var(--surface);border-radius:99px;padding:6px 10px;font:12px "IBM Plex Mono",monospace;color:var(--muted)}section{padding:42px 0;border-bottom:1px solid var(--border)}h2{font-size:25px;line-height:1.2;margin:7px 0}.intro{color:var(--muted);max-width:75ch}.card,.job{background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow)}.card{padding:20px 22px}.tldr{margin-top:20px}.tldr ul{list-style:none;padding:0;margin:0;display:grid;gap:10px}.tldr li{display:flex;gap:10px}.tldr li:before{content:"→";color:var(--accent);font-weight:700}.alert{border-left:4px solid var(--warn);background:var(--warnsoft);padding:15px 18px;border-radius:0 10px 10px 0;margin:18px 0}.good{border-left-color:var(--accent);background:var(--soft)}.filters{display:flex;gap:7px;flex-wrap:wrap;margin:18px 0}.filter{cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--ink);border-radius:99px;padding:7px 12px;font-weight:600}.filter.active{background:var(--accent);color:#fff;border-color:var(--accent)}.grid{display:grid;gap:16px}.job{padding:20px 22px}.jobhead{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.job h3{margin:0 0 3px;font-size:19px}.company{font-weight:700;color:var(--accent2)}.meta{font-size:13px;color:var(--muted);margin-top:6px}.badge{white-space:nowrap;border-radius:99px;padding:5px 9px;font-size:11px;font-weight:700;background:var(--soft);color:var(--accent2)}.badge.stretch{background:var(--warnsoft);color:var(--warn)}.badge.low{background:var(--badsoft);color:var(--bad)}.why{background:var(--surface2);border-left:3px solid var(--accent);padding:11px 13px;border-radius:0 8px 8px 0;margin:14px 0;font-size:14px}.fit{color:var(--muted);font-size:13px}.emailbox{margin-top:14px}.emailbox summary{cursor:pointer;color:var(--accent2);font-weight:700}.email{white-space:pre-wrap;background:var(--bg);border:1px dashed var(--border);border-radius:9px;padding:14px;margin-top:9px;font-family:Georgia,serif;font-size:14px}.contact{font-size:13px;color:var(--muted);margin:10px 0}.emailaddr{font:600 13px "IBM Plex Mono",monospace;color:var(--accent2)}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}.btn{display:inline-block;border:0;border-radius:8px;padding:9px 12px;font-weight:700;font-size:13px;cursor:pointer}.primary{background:var(--accent);color:#fff}.secondary{background:var(--surface2);color:var(--ink);border:1px solid var(--border)}.copymsg{color:var(--accent2);font-size:12px;display:none;align-self:center}.tablewrap{overflow:auto;border:1px solid var(--border);border-radius:12px;background:var(--surface);box-shadow:var(--shadow)}table{width:100%;border-collapse:collapse;min-width:760px}th{text-align:left;background:var(--surface2);font:600 11px "IBM Plex Mono",monospace;text-transform:uppercase;color:var(--muted);padding:11px}td{padding:11px;border-top:1px solid var(--border);vertical-align:top;font-size:13px}.small{font-size:12px;color:var(--muted)}footer{padding-top:25px;color:var(--muted);font-size:12px}
 </style>
 </head>
 <body>
-
-<header class="hero">
-  <div class="inner">
-    <h1>Job Hunt Report — Ruthika C</h1>
-    <div class="sub">BCA + Advanced Diploma in Logistics &amp; Supply Chain Management · Fresher</div>
-    <div class="chips">
-      <span class="chip gold">Bangalore</span>
-      <span class="chip gold">Udupi</span>
-      <span class="chip gold">Mangalore</span>
-      <span class="chip">Postings verified live, last 15 days only</span>
-      <span class="chip">Generated: 20 September 2026</span>
-    </div>
-  </div>
+<div class="wrap">
+<header>
+<div class="eyebrow">Fresh job shortlist · verified 20 Sep 2026, 21:08 IST</div>
+<h1>Ruthika C: logistics, procurement and operations leads</h1>
+<p class="lede">Strict filter: postings surfaced as less than seven days old, located in Bengaluru or Mangaluru, and still reachable on the live listing page. Udupi was searched separately; no Udupi role in the requested function passed every strict freshness check.</p>
+<div class="chips"><span class="chip">Bengaluru</span><span class="chip">Mangaluru</span><span class="chip">0–1 year profile</span><span class="chip">BCA + PG Diploma in Logistics &amp; SCM</span><span class="chip">11 shortlist leads</span></div>
+<nav><a href="#snapshot">Candidate fit</a><a href="#leads">Job leads</a><a href="#plan">Apply plan</a><a href="#method">Verification log</a></nav>
 </header>
 
-<div class="wrap">
-
-<div class="note">
-<strong>How this was built:</strong> Two rounds of live browser research (LinkedIn's public job-detail API + Naukri.com, opened directly — not search snippets) across Bangalore, Udupi and Mangalore, followed by a second verification pass that re-opened every single listing to confirm the exact posting date, exact experience requirement, and check for hidden disqualifiers (specific degrees, certifications, years-of-experience gaps) before it was allowed into this report. Every posting below was independently confirmed live on 20 September 2026 and falls within the last 15 days (posted on or after 5 September 2026). Roles requiring 2+ years, specific unrelated degrees (e.g. Packaging Technology, Master's-mandatory), or SQL/BI-analytics tools she doesn't have were found but excluded — see the note at the bottom for what was dropped and why.
-</div>
-
-<div class="toc">
-  <a href="#snapshot">Candidate Snapshot</a>
-  <a href="#jobs">Verified Job Leads (15)</a>
-  <a href="#dropped">What Was Excluded</a>
-  <a href="#plan">Application Plan</a>
-  <a href="#method">Methodology</a>
-</div>
-
 <section id="snapshot">
-  <h2>Candidate Snapshot</h2>
-  <div class="card">
-    <p><b>Ruthika C</b> — BCA (2021–2024, DR B.B. Hegde First Grade College, Kundapura) + Advanced Diploma in Logistics &amp; Supply Chain Management (2025–2026, Springs Institute, Udupi).</p>
-    <p><b>Internship:</b> Vega Transport, Manipal (1 month) — Goods Receipt (GR) process, E-Way Bill documentation, driver/transport-team coordination, operational records.</p>
-    <p><b>Certifications:</b> Advanced Excel (Pivot Tables, reporting), AWS Academy Cloud Foundations.</p>
-    <p><b>Contact:</b> <span class="hremail" style="background:#eef2f7;color:var(--navy2);">ruthikanaik38@gmail.com</span> &nbsp;|&nbsp; +91 9741915287 &nbsp;|&nbsp; Udupi, Karnataka</p>
-    <p class="muted">Target roles: procurement, sourcing support, supply chain operations, logistics coordination, inventory/warehouse, process/documentation. Fresher band (0–1 yr) prioritized.</p>
-  </div>
+<div class="kicker">01 — Candidate fit</div><h2>Why Ruthika is credible for these roles</h2>
+<div class="card tldr"><ul>
+<li><span><b>Education:</b> BCA plus Advanced Diploma in Logistics &amp; Supply Chain Management, Springs Institute, Udupi.</span></li>
+<li><span><b>Practical proof:</b> Vega Transport, Manipal internship covering Goods Receipt processes, E-Way Bill documentation, transport records and coordination with drivers and operational teams.</span></li>
+<li><span><b>Tools:</b> Advanced Excel, Pivot Tables, reporting, MS Office; additional SQL, Python and basic data-handling exposure.</span></li>
+<li><span><b>Best positioning:</b> entry-level operations, logistics documentation, inventory tracking, vendor follow-up and procurement support. Do not claim 1–3 years of experience; explicitly present the internship and diploma.</span></li>
+</ul></div>
+<div class="alert"><b>Public-page privacy note:</b> this GitHub Pages report contains Ruthika's email and phone only because they are needed for applications. Her date of birth, marital status and other unnecessary personal details were deliberately excluded.</div>
 </section>
 
-<section id="jobs">
-  <h2>Verified Job Leads (15)</h2>
-  <div class="filters">
-    <button class="filter-btn active" data-filter="all">All (15)</button>
-    <button class="filter-btn" data-filter="bangalore">Bangalore (10)</button>
-    <button class="filter-btn" data-filter="udupi-mangalore">Udupi / Mangalore (5)</button>
-    <button class="filter-btn" data-filter="high">High Confidence (6)</button>
-    <button class="filter-btn" data-filter="hasemail">Has HR Email (2)</button>
-  </div>
+<section id="leads">
+<div class="kicker">02 — Live shortlist</div><h2>Apply first to the freshest and closest matches</h2>
+<p class="intro">“Stretch” means the role is fresh and relevant but the employer asks for experience beyond her current profile. It is included for optional direct outreach, not presented as a strong-fit claim. No recruiter email has been invented.</p>
+<div class="filters"><button class="filter active" data-filter="all">All 11</button><button class="filter" data-filter="blr">Bengaluru</button><button class="filter" data-filter="mng">Mangaluru</button><button class="filter" data-filter="strong">Strong fit</button><button class="filter" data-filter="stretch">Stretch</button><button class="filter" data-filter="email">Public email</button></div>
+<div class="grid" id="jobs">
 
-  <div class="job-grid" id="jobGrid">
+<article class="job" data-cat="blr strong">
+<div class="jobhead"><div><h3>Supply Chain Operations New Associate</h3><div class="company">Accenture in India</div><div class="meta">Bengaluru · LinkedIn · posted 7 minutes ago · 0–1 years · Any graduation</div></div><span class="badge">Strong fit</span></div>
+<div class="why"><b>Why apply:</b> This is the cleanest match: explicit 0–1 year band, any graduation, and work covering procurement, distribution, order fulfilment, purchase-order receipt and inventory availability. Rotational shifts may apply.</div>
+<div class="contact">Recipient: no public hiring email verified. Use the official listing.</div>
+<details class="emailbox"><summary>Open crafted email</summary><div class="email" id="e1">Subject: Application — Supply Chain Operations New Associate — Ruthika C
 
-    <!-- BANGALORE — HIGH -->
-    <div class="job-card" data-cat="bangalore high">
-      <div class="job-head">
-        <div>
-          <div class="job-title">Supply Chain Operations New Associate</div>
-          <div class="job-company">Accenture in India</div>
-          <div class="job-meta">Bengaluru, Karnataka &middot; Posted 5 days ago (~15 Sep 2026) &middot; Exp: 0–1 years &middot; Any Graduation</div>
-        </div>
-        <span class="badge b-high">High confidence</span>
-      </div>
-      <div class="why"><b>Why it fits:</b> Explicitly fresher-targeted, any-degree accepted, no hidden disqualifier. Rotational shifts. Directly matches her Supply Chain diploma and internship background.</div>
-      <div class="email-body" id="body1">Dear Hiring Team,
+Dear Hiring Team,
 
-I am writing to apply for the Supply Chain Operations New Associate role at Accenture. I hold a BCA degree along with an Advanced Diploma in Logistics & Supply Chain Management from Springs Institute, Udupi, and completed a hands-on internship at Vega Transport, Manipal, where I worked on Goods Receipt processes and E-Way Bill documentation. I am proficient in Advanced Excel and hold an AWS Academy Cloud Foundations certification.
+I am applying for the Supply Chain Operations New Associate position in Bengaluru. I hold a BCA degree and an Advanced Diploma in Logistics &amp; Supply Chain Management from Springs Institute, Udupi. During my internship at Vega Transport, Manipal, I supported Goods Receipt processes, E-Way Bill documentation and accurate transport-operation records.
 
-I would welcome the opportunity to bring my operational and documentation skills to your Supply Chain Operations team.
+I am proficient in Advanced Excel and interested in order management, procurement support, inventory availability and fulfilment operations. I would value the opportunity to contribute as an entry-level member of your supply-chain team.
 
 Regards,
 Ruthika C
-+91 9741915287 | ruthikanaik38@gmail.com</div>
-      <div class="actions">
-        <button class="btn btn-copy" onclick="copyEmail('body1',this)">Copy Email</button>
-        <span class="copied">Copied!</span>
-        <a class="btn btn-apply" href="https://in.linkedin.com/jobs/view/supply-chain-operations-new-associate-at-accenture-in-india-4467270774" target="_blank">View / Apply on LinkedIn</a>
-      </div>
-    </div>
++91 9741915287 | ruthikanaik38@gmail.com</div></details>
+<div class="actions"><button class="btn primary" onclick="copyText('e1',this)">Copy email</button><span class="copymsg">Copied</span><a class="btn secondary" target="_blank" href="https://in.linkedin.com/jobs/view/supply-chain-operations-new-associate-at-accenture-in-india-4467270774">View / apply</a></div>
+</article>
 
-    <div class="job-card" data-cat="bangalore high">
-      <div class="job-head">
-        <div>
-          <div class="job-title">Procurement Operations New Associate</div>
-          <div class="job-company">Accenture in India</div>
-          <div class="job-meta">Bengaluru, Karnataka &middot; Posted 23 hours ago (~19 Sep 2026 — freshest lead) &middot; Exp: 0–1 years &middot; Any Graduation</div>
-        </div>
-        <span class="badge b-high">High confidence</span>
-      </div>
-      <div class="why"><b>Why it fits:</b> Freshest posting in this whole report. Explicitly 0–1 years, any-degree. Procurement operations aligns with her diploma coursework (procurement fundamentals, vendor coordination).</div>
-      <div class="email-body" id="body2">Dear Hiring Team,
+<article class="job" data-cat="blr strong">
+<div class="jobhead"><div><h3>Operation Executive</h3><div class="company">JobTrade</div><div class="meta">Bengaluru · LinkedIn · posted 14 hours ago · Entry level · full-time</div></div><span class="badge">Strong fit</span></div>
+<div class="why"><b>Why apply:</b> The live description calls for general administration, accounts and documentation, order/employee coordination, client communication and dealer/vendor coordination — all credible extensions of her records and stakeholder-coordination internship.</div>
+<div class="contact">Recipient: no public hiring email verified. Apply on LinkedIn and attach the resume.</div>
+<details class="emailbox"><summary>Open crafted email</summary><div class="email" id="e2">Subject: Application — Operation Executive — Ruthika C
 
-I am applying for the Procurement Operations New Associate position at Accenture. I completed my BCA along with an Advanced Diploma in Logistics & Supply Chain Management, with coursework covering procurement fundamentals and vendor coordination. During my internship at Vega Transport, Manipal, I handled Goods Receipt documentation and E-Way Bill compliance. I am well-versed in Advanced Excel (Pivot Tables, reporting) and hold an AWS Academy Cloud Foundations certificate.
+Dear Hiring Team,
 
-I am confident I can contribute effectively to your procurement operations team from day one.
+I am writing to apply for the Operation Executive role in Bengaluru. I hold a BCA degree and an Advanced Diploma in Logistics &amp; Supply Chain Management. At Vega Transport, Manipal, I supported Goods Receipt documentation, E-Way Bill records and coordination with drivers, customers and internal operational teams.
+
+My Advanced Excel training, attention to documentation and willingness to learn would allow me to support order coordination, vendor follow-up and day-to-day administration effectively.
 
 Regards,
 Ruthika C
-+91 9741915287 | ruthikanaik38@gmail.com</div>
-      <div class="actions">
-        <button class="btn btn-copy" onclick="copyEmail('body2',this)">Copy Email</button>
-        <span class="copied">Copied!</span>
-        <a class="btn btn-apply" href="https://in.linkedin.com/jobs/view/procurement-operations-new-associate-at-accenture-in-india-4460501646" target="_blank">View / Apply on LinkedIn</a>
-      </div>
-    </div>
++91 9741915287 | ruthikanaik38@gmail.com</div></details>
+<div class="actions"><button class="btn primary" onclick="copyText('e2',this)">Copy email</button><span class="copymsg">Copied</span><a class="btn secondary" target="_blank" href="https://in.linkedin.com/jobs/view/operation-executive-at-jobtrade-4468435101">View / apply</a></div>
+</article>
 
-    <div class="job-card" data-cat="bangalore high">
-      <div class="job-head">
-        <div>
-          <div class="job-title">Procurement Practice New Associate</div>
-          <div class="job-company">Accenture in India</div>
-          <div class="job-meta">Bengaluru, Karnataka &middot; Posted 2 days ago (~18 Sep 2026) &middot; Exp: 0–1 years &middot; Any Graduation</div>
-        </div>
-        <span class="badge b-high">High confidence</span>
-      </div>
-      <div class="why"><b>Why it fits:</b> Same fresher-friendly Accenture template as above — a third, separate live requisition. Applying to all three Accenture postings widens the odds without extra research cost.</div>
-      <div class="email-body" id="body3">Dear Hiring Team,
+<article class="job" data-cat="blr strong">
+<div class="jobhead"><div><h3>Logistics Coordinator / Truck Placement Officer</h3><div class="company">JobTrade</div><div class="meta">Yeshwanthpur, Bengaluru · LinkedIn · posted 1 day ago · Freshers and experienced candidates · full-time</div></div><span class="badge">Strong fit</span></div>
+<div class="why"><b>Why apply:</b> The role covers truck placement, freight-rate negotiation, transporter engagement, truck tracking and operational issue handling. The listing explicitly accepts freshers and asks for fluent Hindi and Kannada, both listed on Ruthika's CV.</div>
+<div class="contact">Recipient: no public hiring email verified. Apply through the live LinkedIn listing.</div>
+<details class="emailbox"><summary>Open crafted email</summary><div class="email" id="e3">Subject: Application — Logistics Coordinator — Ruthika C
 
-I would like to apply for the Procurement Practice New Associate role at Accenture. I hold a BCA degree and an Advanced Diploma in Logistics & Supply Chain Management, and completed an internship at Vega Transport, Manipal focused on Goods Receipt and E-Way Bill processes. My Advanced Excel and AWS Cloud Foundations certifications support strong data-handling and documentation skills relevant to this role.
+Dear Hiring Team,
 
-I look forward to the opportunity to discuss how I can contribute to your team.
+I am interested in the Logistics Coordinator / Truck Placement Officer opening in Yeshwanthpur. I hold an Advanced Diploma in Logistics &amp; Supply Chain Management and completed a transport-operations internship at Vega Transport, Manipal. My exposure includes Goods Receipt processes, E-Way Bill documentation, record maintenance and coordination with drivers and operational stakeholders.
+
+I speak Kannada, Hindi and English, and would be comfortable supporting transporter communication, shipment tracking and day-to-day logistics follow-up.
 
 Regards,
 Ruthika C
-+91 9741915287 | ruthikanaik38@gmail.com</div>
-      <div class="actions">
-        <button class="btn btn-copy" onclick="copyEmail('body3',this)">Copy Email</button>
-        <span class="copied">Copied!</span>
-        <a class="btn btn-apply" href="https://in.linkedin.com/jobs/view/procurement-practice-new-associate-at-accenture-in-india-4468810635" target="_blank">View / Apply on LinkedIn</a>
-      </div>
-    </div>
++91 9741915287 | ruthikanaik38@gmail.com</div></details>
+<div class="actions"><button class="btn primary" onclick="copyText('e3',this)">Copy email</button><span class="copymsg">Copied</span><a class="btn secondary" target="_blank" href="https://in.linkedin.com/jobs/view/logistics-coordinator-at-jobtrade-4468052399">View / apply</a></div>
+</article>
 
-    <div class="job-card" data-cat="bangalore high hasemail">
-      <div class="job-head">
-        <div>
-          <div class="job-title">Logistics Executive</div>
-          <div class="job-company">Birla Pivot</div>
-          <div class="job-meta">Bengaluru, Karnataka &middot; Posted 5 days ago (~15 Sep 2026) &middot; Exp: Freshers to 1–2 years</div>
-        </div>
-        <span class="badge b-high">High confidence</span>
-      </div>
-      <div class="why"><b>Why it fits:</b> Explicitly open to freshers, strong Excel/MIS emphasis (matches her Advanced Excel cert), female candidates preferred. Note: 11-month offroll contract, not permanent — flag this to her before applying. Recruiter identified by name: <b>Rupali Nayak</b>, HR/Talent Acquisition at Birla Pivot.</div>
-      <p class="small">No verified direct email for Rupali Nayak (third-party contact-finders show unconfirmed addresses) — best path is a LinkedIn connection/InMail to her profile: <a href="https://in.linkedin.com/in/rupali-nayak-99a96220b" target="_blank">linkedin.com/in/rupali-nayak-99a96220b</a></p>
-      <div class="email-body" id="body4">Dear Ms. Nayak,
+<article class="job" data-cat="mng strong email">
+<div class="jobhead"><div><h3>Pricing &amp; Operation Executive — Logistics</h3><div class="company">FAMOS INT'L FREIGHT COMPANY</div><div class="meta">Mangaluru · LinkedIn · posted 38 minutes ago · on-site · full-time</div></div><span class="badge">Strong domain fit</span></div>
+<div class="why"><b>Why apply:</b> Freight quotations, shipment bookings, documentation, shipment-status tracking and operational records directly use her logistics diploma and documentation exposure. The page labels the role mid-senior, so this is a direct-outreach stretch despite the strong domain fit.</div>
+<div class="contact">Public company inbox: <span class="emailaddr">info@famos.ae</span> · not confirmed as a job-specific hiring inbox. Official company site: <a target="_blank" href="https://famos.ae/">famos.ae</a></div>
+<details class="emailbox"><summary>Open crafted email</summary><div class="email" id="e4">Subject: Application — Pricing &amp; Operations Executive, Mangaluru — Ruthika C
 
-I came across the Logistics Executive opening at Birla Pivot and wanted to reach out directly. I hold a BCA degree along with an Advanced Diploma in Logistics & Supply Chain Management, and completed an internship at Vega Transport, Manipal where I handled Goods Receipt processes and E-Way Bill documentation. I am proficient in Advanced Excel, including Pivot Tables and MIS reporting, which I understand is central to this role.
+Dear FAMOS Hiring Team,
 
-I would be glad to share my resume and discuss how I can contribute to your logistics team.
+I am writing to express interest in the Pricing &amp; Operations Executive — Logistics opening in Mangaluru. I hold an Advanced Diploma in Logistics &amp; Supply Chain Management and a BCA degree. During my internship at Vega Transport, Manipal, I supported Goods Receipt processes, E-Way Bill documentation, operational records and coordination with transport stakeholders.
+
+I am comfortable with Excel-based data handling and documentation, and I am eager to build practical experience in freight quotations, shipment coordination and logistics operations. I have attached my resume for your consideration.
 
 Regards,
 Ruthika C
-+91 9741915287 | ruthikanaik38@gmail.com</div>
-      <div class="actions">
-        <button class="btn btn-copy" onclick="copyEmail('body4',this)">Copy Email</button>
-        <span class="copied">Copied!</span>
-        <a class="btn btn-apply" href="https://in.linkedin.com/jobs/view/logistics-executive-at-birla-pivot-4465544406" target="_blank">View / Apply on LinkedIn</a>
-        <a class="btn btn-apply" href="https://in.linkedin.com/in/rupali-nayak-99a96220b" target="_blank">Message Recruiter</a>
-      </div>
-    </div>
++91 9741915287 | ruthikanaik38@gmail.com</div></details>
+<div class="actions"><button class="btn primary" onclick="copyText('e4',this)">Copy email</button><span class="copymsg">Copied</span><a class="btn secondary" href="mailto:info@famos.ae?subject=Application%20%E2%80%94%20Pricing%20%26%20Operations%20Executive%2C%20Mangaluru%20%E2%80%94%20Ruthika%20C">Open in mail</a><a class="btn secondary" target="_blank" href="https://in.linkedin.com/jobs/view/pricing-operation-executive-logistics-at-famos-int-l-freight-company-4464757458">View / apply</a></div>
+</article>
 
-    <div class="job-card" data-cat="bangalore high">
-      <div class="job-head">
-        <div>
-          <div class="job-title">Process Assistant, BLR7 Inbound</div>
-          <div class="job-company">Amazon</div>
-          <div class="job-meta">Bengaluru, Karnataka &middot; Posted 1 week ago (~13 Sep 2026) &middot; Exp: High school or equivalent — lowest bar of all leads</div>
-        </div>
-        <span class="badge b-high">High confidence</span>
-      </div>
-      <div class="why"><b>Why it fits:</b> No degree requirement at all. Warehouse/inbound/inventory/GST-invoice tasks align directly with her E-Way Bill and Goods Receipt internship experience.</div>
-      <div class="email-body" id="body5">Dear Hiring Team,
+<article class="job" data-cat="blr stretch">
+<div class="jobhead"><div><h3>Operations Executive — Control Tower</h3><div class="company">Blitz</div><div class="meta">Bengaluru · LinkedIn · posted 2 days ago · minimum 1 year relevant experience · rotational shifts</div></div><span class="badge stretch">Stretch</span></div>
+<div class="why"><b>Why apply:</b> Strong logistics match: shipment monitoring, D0/D1 closure, SLA tracking, exception management, dashboards and cross-functional coordination. The real gap is the stated minimum one year of relevant experience.</div>
+<div class="contact">Recipient: no public hiring email verified.</div>
+<details class="emailbox"><summary>Open crafted email</summary><div class="email" id="e5">Subject: Application — Operations Executive, Control Tower — Ruthika C
 
-I am interested in the Process Assistant, BLR7 Inbound role at Amazon. During my internship at Vega Transport, Manipal, I gained hands-on experience with Goods Receipt processes, E-Way Bill documentation, and coordinating operational records with drivers and transport teams — skills directly relevant to inbound and inventory operations. I hold a BCA degree, an Advanced Diploma in Logistics & Supply Chain Management, and am proficient in Advanced Excel.
+Dear Hiring Team,
 
-I would welcome the opportunity to bring this hands-on experience to your inbound operations team.
+I am applying for the Operations Executive — Control Tower role in Bengaluru. My Advanced Diploma in Logistics &amp; Supply Chain Management and internship at Vega Transport, Manipal gave me practical exposure to Goods Receipt, E-Way Bill documentation, transport records and coordination with operational stakeholders.
+
+I am particularly interested in shipment monitoring, exception follow-up, SLA tracking and daily operational reporting. Although I am early in my career, I bring strong Excel skills, attention to detail and a documented foundation in transport operations.
 
 Regards,
 Ruthika C
-+91 9741915287 | ruthikanaik38@gmail.com</div>
-      <div class="actions">
-        <button class="btn btn-copy" onclick="copyEmail('body5',this)">Copy Email</button>
-        <span class="copied">Copied!</span>
-        <a class="btn btn-apply" href="https://in.linkedin.com/jobs/view/process-assistant-blr7-inbound-at-amazon-4466362390" target="_blank">View / Apply on LinkedIn</a>
-      </div>
-    </div>
++91 9741915287 | ruthikanaik38@gmail.com</div></details>
+<div class="actions"><button class="btn primary" onclick="copyText('e5',this)">Copy email</button><span class="copymsg">Copied</span><a class="btn secondary" target="_blank" href="https://in.linkedin.com/jobs/view/operations-executive-control-tower-at-blitz-4467843968">View / apply</a></div>
+</article>
 
-    <!-- BANGALORE — MEDIUM -->
-    <div class="job-card" data-cat="bangalore med">
-      <div class="job-head">
-        <div>
-          <div class="job-title">Consumable Executive</div>
-          <div class="job-company">RentoMojo</div>
-          <div class="job-meta">Bengaluru, Karnataka &middot; Posted 1 week ago (~13 Sep 2026) &middot; Exp: 1–3 years (above fresher band) &middot; Any discipline</div>
-        </div>
-        <span class="badge b-med">Medium confidence</span>
-      </div>
-      <div class="why"><b>Why it fits:</b> Role and skills (supply chain, Excel, vendor coordination) align well with her profile; the 1–3 yr ask exceeds her 1-month internship but any-discipline graduates are welcome — worth applying with a note on rapid learning ability.</div>
-      <div class="email-body" id="body6">Dear Hiring Team,
+<article class="job" data-cat="blr stretch email">
+<div class="jobhead"><div><h3>Associate — Hyperlocal Supply</h3><div class="company">Myntra</div><div class="meta">Bengaluru · LinkedIn indexed 5 days ago · 1–3 years · full-time</div></div><span class="badge stretch">Stretch</span></div>
+<div class="why"><b>Why apply:</b> Inward logistics, inventory discrepancies, SKU planning, supplier/brand coordination and Excel reporting map closely to her diploma. The listing asks for 1–3 years and quick-commerce experience, so present this as an ambitious application.</div>
+<div class="contact">Public careers contact surfaced from Myntra's careers pages: <span class="emailaddr">careers@myntra.com</span>. Verify the inbox before sending; the job should also be submitted through the listing.</div>
+<details class="emailbox"><summary>Open crafted email</summary><div class="email" id="e6">Subject: Application — Associate, Hyperlocal Supply — Ruthika C
 
-I am writing to express interest in the Consumable Executive position at RentoMojo. I hold a BCA degree and an Advanced Diploma in Logistics & Supply Chain Management, and completed an internship at Vega Transport, Manipal in Goods Receipt and E-Way Bill documentation. I am proficient in Advanced Excel and comfortable with vendor coordination and operational recordkeeping.
+Dear Myntra Hiring Team,
 
-While I am early in my career, I am confident my hands-on internship experience and strong Excel skills allow me to ramp up quickly in this role.
+I am writing to apply for the Associate — Hyperlocal Supply role in Bengaluru. I hold a BCA degree and an Advanced Diploma in Logistics &amp; Supply Chain Management, with practical exposure to procurement, warehouse operations and inventory handling.
+
+During my internship at Vega Transport, Manipal, I supported Goods Receipt processes, E-Way Bill documentation and accurate transport records. I am also trained in Advanced Excel, including Pivot Tables and reporting. I would welcome the opportunity to contribute to inward logistics, inventory accuracy and vendor coordination at Myntra.
 
 Regards,
 Ruthika C
-+91 9741915287 | ruthikanaik38@gmail.com</div>
-      <div class="actions">
-        <button class="btn btn-copy" onclick="copyEmail('body6',this)">Copy Email</button>
-        <span class="copied">Copied!</span>
-        <a class="btn btn-apply" href="https://in.linkedin.com/jobs/view/consumable-executive-at-rentomojo-4462913771" target="_blank">View / Apply on LinkedIn</a>
-      </div>
-    </div>
++91 9741915287 | ruthikanaik38@gmail.com</div></details>
+<div class="actions"><button class="btn primary" onclick="copyText('e6',this)">Copy email</button><span class="copymsg">Copied</span><a class="btn secondary" href="mailto:careers@myntra.com?subject=Application%20%E2%80%94%20Associate%2C%20Hyperlocal%20Supply%20%E2%80%94%20Ruthika%20C">Open in mail</a><a class="btn secondary" target="_blank" href="https://in.linkedin.com/jobs/view/associate-hyperlocal-supply-at-myntra-4448168707">View / apply</a></div>
+</article>
 
-    <div class="job-card" data-cat="bangalore med">
-      <div class="job-head">
-        <div>
-          <div class="job-title">Operations Executive</div>
-          <div class="job-company">Rempact</div>
-          <div class="job-meta">Bengaluru South, Karnataka &middot; Posted 6 days ago (~14 Sep 2026) &middot; Exp: 1–3 years stated (listed as Internship type)</div>
-        </div>
-        <span class="badge b-med">Medium confidence</span>
-      </div>
-      <div class="why"><b>Why it fits:</b> No hard degree barrier. E-commerce fulfilment/ops role — she'd need to learn Shopify/e-comm tools on the job, but her documentation/process-coordination background transfers.</div>
-      <div class="email-body" id="body7">Dear Hiring Team,
+<article class="job" data-cat="blr stretch">
+<div class="jobhead"><div><h3>Operation Executive — Logistics</h3><div class="company">Birla Pivot</div><div class="meta">Bengaluru · LinkedIn · posted 4 days ago · 1–2 years · 11-month off-roll contract</div></div><span class="badge stretch">Stretch</span></div>
+<div class="why"><b>Why apply:</b> Shipment tracking, transporter coordination, POD documentation, MIS dashboards and exception handling fit her internship and Excel profile. The listing asks for 1–2 years and is contractual; confirm terms before committing.</div>
+<div class="contact">Named poster: Rupali Nayak, HR Executive. No public direct email verified. Use the listing's message/apply route.</div>
+<details class="emailbox"><summary>Open crafted email</summary><div class="email" id="e7">Subject: Application — Operation Executive, Logistics — Ruthika C
 
-I am applying for the Operations Executive role at Rempact. I hold a BCA degree and an Advanced Diploma in Logistics & Supply Chain Management, with practical experience gained during my internship at Vega Transport, Manipal handling Goods Receipt and E-Way Bill documentation. I am proficient in Advanced Excel and quick to learn new operational tools and systems.
+Dear Ms. Nayak,
 
-I would appreciate the opportunity to discuss how I can support your operations team.
+I came across the Operation Executive — Logistics opening at Birla Pivot. I hold a BCA degree and an Advanced Diploma in Logistics &amp; Supply Chain Management, and completed an internship at Vega Transport, Manipal involving Goods Receipt, E-Way Bill documentation and transport-record coordination.
+
+My Advanced Excel and documentation skills align with shipment tracking, POD follow-up, MIS reporting and exception coordination. I would be grateful if you would consider my profile for this opportunity.
 
 Regards,
 Ruthika C
-+91 9741915287 | ruthikanaik38@gmail.com</div>
-      <div class="actions">
-        <button class="btn btn-copy" onclick="copyEmail('body7',this)">Copy Email</button>
-        <span class="copied">Copied!</span>
-        <a class="btn btn-apply" href="https://in.linkedin.com/jobs/view/operations-executive-at-rempact-4465774545" target="_blank">View / Apply on LinkedIn</a>
-      </div>
-    </div>
++91 9741915287 | ruthikanaik38@gmail.com</div></details>
+<div class="actions"><button class="btn primary" onclick="copyText('e7',this)">Copy email</button><span class="copymsg">Copied</span><a class="btn secondary" target="_blank" href="https://in.linkedin.com/jobs/view/operation-executive-logistics-at-birla-pivot-4465959602">View / apply</a><a class="btn secondary" target="_blank" href="https://www.birlapivot.com/careers">Company careers</a></div>
+</article>
 
-    <div class="job-card" data-cat="bangalore med">
-      <div class="job-head">
-        <div>
-          <div class="job-title">Procurement Coordinator</div>
-          <div class="job-company">Zimmer Biomet</div>
-          <div class="job-meta">Bengaluru, Karnataka (Hybrid) &middot; Posted 1 week ago (~13 Sep 2026) &middot; Exp: 1–2 years</div>
-        </div>
-        <span class="badge b-med">Medium confidence</span>
-      </div>
-      <div class="why"><b>Why it fits:</b> Procurement/invoice-resolution role fits her diploma coursework. Education line says "B.Com / Any Graduate with Mathematics background" — BCA includes quantitative coursework, some interpretation risk but worth applying. Hybrid: 2 days WFH / 3 WFO.</div>
-      <div class="email-body" id="body8">Dear Hiring Team,
+<article class="job" data-cat="blr stretch email">
+<div class="jobhead"><div><h3>Product Operations Associate</h3><div class="company">YosAid Innovation Foundation</div><div class="meta">Bengaluru · LinkedIn · posted 3 days ago · 1–3 years · full-time</div></div><span class="badge stretch">Stretch / adjacent</span></div>
+<div class="why"><b>Why apply:</b> The work is product/program operations: data trackers, platform setup, testing, documentation, runbooks and cross-team coordination. It is not a conventional supply-chain role and asks for no-code/low-code implementation exposure, so apply only if Ruthika wants an operations-to-product pivot.</div>
+<div class="contact">Public email listed by PublicHealthCareer directory: <span class="emailaddr">recruitment@yosaid.org</span> · third-party listing; verify before sending. Official site: <a target="_blank" href="https://www.yosaid.org/">yosaid.org</a></div>
+<details class="emailbox"><summary>Open crafted email</summary><div class="email" id="e8">Subject: Application — Product Operations Associate — Ruthika C
 
-I am interested in the Procurement Coordinator position at Zimmer Biomet. I hold a BCA degree, which includes a strong quantitative and analytical foundation, along with an Advanced Diploma in Logistics & Supply Chain Management. My internship at Vega Transport, Manipal gave me hands-on exposure to Goods Receipt and E-Way Bill processes, and I am proficient in Advanced Excel for data handling and reporting.
+Dear YosAid Hiring Team,
 
-I would welcome the chance to bring these skills to your procurement team.
+I am interested in the Product Operations Associate role in Bengaluru. I hold a BCA degree and an Advanced Diploma in Logistics &amp; Supply Chain Management, with practical experience in accurate data handling, operational documentation and stakeholder coordination.
+
+My Advanced Excel training and computer-application background would support trackers, testing, documentation and structured process execution. I am also comfortable learning new platforms and converting operational requirements into clear records and repeatable workflows.
 
 Regards,
 Ruthika C
-+91 9741915287 | ruthikanaik38@gmail.com</div>
-      <div class="actions">
-        <button class="btn btn-copy" onclick="copyEmail('body8',this)">Copy Email</button>
-        <span class="copied">Copied!</span>
-        <a class="btn btn-apply" href="https://in.linkedin.com/jobs/view/procurement-coordinator-at-zimmer-biomet-4456210217" target="_blank">View / Apply on LinkedIn</a>
-      </div>
-    </div>
++91 9741915287 | ruthikanaik38@gmail.com</div></details>
+<div class="actions"><button class="btn primary" onclick="copyText('e8',this)">Copy email</button><span class="copymsg">Copied</span><a class="btn secondary" href="mailto:recruitment@yosaid.org?subject=Application%20%E2%80%94%20Product%20Operations%20Associate%20%E2%80%94%20Ruthika%20C">Open in mail</a><a class="btn secondary" target="_blank" href="https://in.linkedin.com/jobs/view/product-operations-associate-at-yosaid-innovation-foundation-4468649337">View / apply</a></div>
+</article>
 
-    <div class="job-card" data-cat="bangalore med">
-      <div class="job-head">
-        <div>
-          <div class="job-title">Operations Executive – Control Tower</div>
-          <div class="job-company">Blitz (Quick Commerce)</div>
-          <div class="job-meta">Bengaluru, Karnataka &middot; Posted 2 days ago (~18 Sep 2026) &middot; Exp: Bachelor's + minimum 1 year</div>
-        </div>
-        <span class="badge b-med">Medium confidence</span>
-      </div>
-      <div class="why"><b>Why it fits:</b> Same-day/next-day-delivery logistics operations role fits her supply-chain background well. Stated 1-yr minimum is a real gap vs her 1-month internship, but worth a shot given the strong domain fit. Rotational shifts + public holiday work required.</div>
-      <div class="email-body" id="body9">Dear Hiring Team,
+<article class="job" data-cat="blr stretch">
+<div class="jobhead"><div><h3>Operations Executive</h3><div class="company">Rempact</div><div class="meta">Bengaluru South · LinkedIn · posted 6 days ago · 1–3 years · listed as internship type</div></div><span class="badge stretch">Stretch</span></div>
+<div class="why"><b>Why apply:</b> Hands-on fulfilment, inventory, returns, dispatch, warehouse coordination, Excel/Sheets and vendor follow-up are highly relevant. The experience line says 1–3 years even though the employment type is internship; this ambiguity makes it worth a targeted application, not a guaranteed-fit claim.</div>
+<div class="contact">Recipient: no public hiring email verified.</div>
+<details class="emailbox"><summary>Open crafted email</summary><div class="email" id="e9">Subject: Application — Operations Executive — Ruthika C
 
-I am writing to apply for the Operations Executive – Control Tower role at Blitz. I hold a BCA degree and an Advanced Diploma in Logistics & Supply Chain Management, and completed a hands-on internship at Vega Transport, Manipal focused on Goods Receipt and E-Way Bill documentation — directly relevant to delivery and dispatch operations. I am comfortable with rotational schedules and proficient in Advanced Excel for operational tracking.
+Dear Hiring Team,
 
-I would be glad to bring my logistics coordination experience to your control tower team.
+I am applying for the Operations Executive role in Bengaluru. I hold a BCA degree and an Advanced Diploma in Logistics &amp; Supply Chain Management. At Vega Transport, Manipal, I supported Goods Receipt, E-Way Bill documentation and transport records while coordinating with drivers and operational stakeholders.
+
+The role's focus on fulfilment, inventory, dispatch, returns and operational reporting is closely aligned with my training. I am proficient in Advanced Excel and eager to learn the e-commerce tools used by your team.
 
 Regards,
 Ruthika C
-+91 9741915287 | ruthikanaik38@gmail.com</div>
-      <div class="actions">
-        <button class="btn btn-copy" onclick="copyEmail('body9',this)">Copy Email</button>
-        <span class="copied">Copied!</span>
-        <a class="btn btn-apply" href="https://in.linkedin.com/jobs/view/operations-executive-control-tower-at-blitz-4467843968" target="_blank">View / Apply on LinkedIn</a>
-      </div>
-    </div>
++91 9741915287 | ruthikanaik38@gmail.com</div></details>
+<div class="actions"><button class="btn primary" onclick="copyText('e9',this)">Copy email</button><span class="copymsg">Copied</span><a class="btn secondary" target="_blank" href="https://in.linkedin.com/jobs/view/operations-executive-at-rempact-4465774545">View / apply</a></div>
+</article>
 
-    <div class="job-card" data-cat="bangalore med hasemail">
-      <div class="job-head">
-        <div>
-          <div class="job-title">Management Trainee (Immediate Joiners Only)</div>
-          <div class="job-company">factori.com (Sushine Exports Pvt Ltd)</div>
-          <div class="job-meta">Bengaluru, Karnataka (Bannerghatta–Jigani Rd) &middot; Posted 1 day ago (~19 Sep 2026) &middot; Freshers welcome, prior experience "a plus, not required"</div>
-        </div>
-        <span class="badge b-med">Medium confidence</span>
-      </div>
-      <div class="why"><b>Why it fits:</b> Genuinely fresher-friendly language. ₹25,000/month during a 6-month training period, with review/promotion after. Note: eligible-degree list names B.Com/BBM/BBA/B.Tech/M.Com/MBA — BCA isn't explicitly listed, so mention it clearly in the email. Requires ability to join immediately — confirm her availability first.</div>
-      <p class="small">Verified HR email: <span class="hremail">career@factori.com</span> (also contact@factori.com for general queries)</p>
-      <div class="email-body" id="body10">Dear Hiring Team at factori.com,
+<article class="job" data-cat="blr strong">
+<div class="jobhead"><div><h3>Logistics &amp; Operations Associate</h3><div class="company">Laundryheap</div><div class="meta">Bengaluru · LinkedIn indexed 4 days ago · full-time · public page reachable</div></div><span class="badge">Strong domain fit</span></div>
+<div class="why"><b>Why apply:</b> The live public listing is a direct logistics/operations associate opening in Bengaluru. The public page does not expose a full experience requirement, so this is a sensible early-career application but should be checked once more immediately before submission.</div>
+<div class="contact">No public hiring email verified. Company application board: <a target="_blank" href="https://apply.workable.com/laundryheap-2/">Laundryheap Workable</a>.</div>
+<details class="emailbox"><summary>Open crafted email</summary><div class="email" id="e10">Subject: Application — Logistics &amp; Operations Associate, Bengaluru — Ruthika C
 
-I am writing to apply for the Management Trainee position (Immediate Joiners Only). I hold a BCA degree along with an Advanced Diploma in Logistics & Supply Chain Management from Springs Institute, Udupi, and completed a 1-month internship at Vega Transport, Manipal, working on Goods Receipt processes and E-Way Bill documentation. I am proficient in Advanced Excel and hold an AWS Academy Cloud Foundations certification. I am available to join immediately.
+Dear Laundryheap Hiring Team,
 
-I would welcome the opportunity to discuss this role further. My resume is attached for your reference.
+I am writing to apply for the Logistics &amp; Operations Associate role in Bengaluru. I hold a BCA degree and an Advanced Diploma in Logistics &amp; Supply Chain Management, and completed a transport-operations internship at Vega Transport, Manipal.
+
+My practical exposure includes Goods Receipt processes, E-Way Bill documentation, accurate operational records and coordination with transport stakeholders. I am proficient in Advanced Excel and would be keen to support shipment coordination, documentation and day-to-day logistics operations at Laundryheap.
 
 Regards,
 Ruthika C
-+91 9741915287 | ruthikanaik38@gmail.com</div>
-      <div class="actions">
-        <button class="btn btn-copy" onclick="copyEmail('body10',this)">Copy Email</button>
-        <span class="copied">Copied!</span>
-        <a class="btn btn-mail" href="mailto:career@factori.com?subject=Application%20for%20Management%20Trainee%20(Immediate%20Joiners)%20-%20Ruthika%20C&body=Dear%20Hiring%20Team%20at%20factori.com%2C%0A%0AI%20am%20writing%20to%20apply%20for%20the%20Management%20Trainee%20position%20(Immediate%20Joiners%20Only).%20I%20hold%20a%20BCA%20degree%20along%20with%20an%20Advanced%20Diploma%20in%20Logistics%20%26%20Supply%20Chain%20Management%20from%20Springs%20Institute%2C%20Udupi%2C%20and%20completed%20a%201-month%20internship%20at%20Vega%20Transport%2C%20Manipal%2C%20working%20on%20Goods%20Receipt%20processes%20and%20E-Way%20Bill%20documentation.%20I%20am%20proficient%20in%20Advanced%20Excel%20and%20hold%20an%20AWS%20Academy%20Cloud%20Foundations%20certification.%20I%20am%20available%20to%20join%20immediately.%0A%0AI%20would%20welcome%20the%20opportunity%20to%20discuss%20this%20role%20further.%20My%20resume%20is%20attached%20for%20your%20reference.%0A%0ARegards%2C%0ARuthika%20C%0A%2B91%209741915287%20%7C%20ruthikanaik38%40gmail.com">Open in Mail</a>
-        <a class="btn btn-apply" href="https://in.linkedin.com/jobs/view/management-trainee-immediate-joiners-only-at-factori-com-4468075790" target="_blank">View on LinkedIn</a>
-      </div>
-    </div>
++91 9741915287 | ruthikanaik38@gmail.com</div></details>
+<div class="actions"><button class="btn primary" onclick="copyText('e10',this)">Copy email</button><span class="copymsg">Copied</span><a class="btn secondary" target="_blank" href="https://in.linkedin.com/jobs/view/logistics-operations-associate-at-laundryheap-4466833934">View / apply</a><a class="btn secondary" target="_blank" href="https://apply.workable.com/laundryheap-2/">Company board</a></div>
+</article>
 
-    <!-- UDUPI / MANGALORE -->
-    <div class="job-card" data-cat="udupi-mangalore high">
-      <div class="job-head">
-        <div>
-          <div class="job-title">Executive (Stores)</div>
-          <div class="job-company">G R Infraprojects Limited</div>
-          <div class="job-meta">Mangaluru (+ Hubballi / Mysuru / Bengaluru / Belagavi) &middot; Posted 4 days ago (16 Sep 2026) &middot; Exp: 1–3 years, Stores/Material Management</div>
-        </div>
-        <span class="badge b-high">High confidence</span>
-      </div>
-      <div class="why"><b>Why it fits:</b> Freshest and best functional match in the Mangalore/Udupi region — Stores/Material Management sits under Procurement &amp; Supply Chain / SCM &amp; Logistics, directly overlapping with her diploma and Goods Receipt internship experience.</div>
-      <div class="email-body" id="body11">Dear Hiring Team,
+<article class="job" data-cat="blr stretch">
+<div class="jobhead"><div><h3>Supply Chain Operations Associate</h3><div class="company">Accenture in India</div><div class="meta">Bengaluru · LinkedIn · posted 7 minutes ago · 1–3 years · any graduation</div></div><span class="badge stretch">Stretch</span></div>
+<div class="why"><b>Why apply:</b> Same-day fresh listing and strong functional match: planning, procurement, distribution, order management, purchase-order receipt and inventory availability. The stated 1–3 year band is above Ruthika's current experience.</div>
+<div class="contact">Recipient: no public hiring email verified. Use the official Accenture listing.</div>
+<details class="emailbox"><summary>Open crafted email</summary><div class="email" id="e11">Subject: Application — Supply Chain Operations Associate — Ruthika C
 
-I am writing to apply for the Executive (Stores) position at G R Infraprojects Limited, Mangaluru. I hold a BCA degree along with an Advanced Diploma in Logistics & Supply Chain Management, and completed an internship at Vega Transport, Manipal where I handled Goods Receipt processes, E-Way Bill documentation, and operational record maintenance. I am proficient in Advanced Excel for inventory tracking and reporting.
+Dear Hiring Team,
 
-I am based in Udupi and would be well positioned to join your Mangaluru team. I look forward to the opportunity to discuss this role.
+I am applying for the Supply Chain Operations Associate role in Bengaluru. I hold a BCA degree and an Advanced Diploma in Logistics &amp; Supply Chain Management, supported by a transport-operations internship at Vega Transport, Manipal.
+
+I have practical exposure to Goods Receipt, E-Way Bill documentation, operational record maintenance and stakeholder follow-up. My Advanced Excel skills and strong interest in order management, procurement and inventory operations would allow me to contribute while continuing to grow professionally.
 
 Regards,
 Ruthika C
-+91 9741915287 | ruthikanaik38@gmail.com</div>
-      <div class="actions">
-        <button class="btn btn-copy" onclick="copyEmail('body11',this)">Copy Email</button>
-        <span class="copied">Copied!</span>
-        <a class="btn btn-apply" href="https://www.naukri.com/job-listings-executive-g-r-infraprojects-limited-hubballi-mangaluru-mysuru-bengaluru-belagavi-1-to-3-years-160926500023" target="_blank">View / Apply on Naukri</a>
-      </div>
-    </div>
++91 9741915287 | ruthikanaik38@gmail.com</div></details>
+<div class="actions"><button class="btn primary" onclick="copyText('e11',this)">Copy email</button><span class="copymsg">Copied</span><a class="btn secondary" target="_blank" href="https://in.linkedin.com/jobs/view/supply-chain-operations-associate-at-accenture-in-india-4467279059">View / apply</a></div>
+</article>
 
-    <div class="job-card" data-cat="udupi-mangalore mh">
-      <div class="job-head">
-        <div>
-          <div class="job-title">Store Supervisor</div>
-          <div class="job-company">bigbasket</div>
-          <div class="job-meta">Mangaluru (Jeppinamogaru) &middot; Posted 1 week ago (~13 Sep 2026) &middot; Exp: 1–2 yrs listed (JD body says 2–4 yrs — inconsistent) &middot; ₹3.5–3.75 LPA</div>
-        </div>
-        <span class="badge b-mh">Medium-High confidence</span>
-      </div>
-      <div class="why"><b>Why it fits:</b> Fresh, reasonably matched to logistics/inventory/dispatch background. Has a direct human contact rather than an ATS-only application, which is valuable in this smaller regional market.</div>
-      <p class="small">Direct HR contact: <b>Chaithra</b>, phone/WhatsApp <span class="hremail" style="background:#eef2f7;color:var(--navy2);">8431933007</span> (no email published — call or WhatsApp directly, mentioning the Naukri listing)</p>
-      <div class="actions">
-        <a class="btn btn-apply" href="https://www.naukri.com/job-listings-store-supervisor-bigbasket-mangaluru-1-to-2-years-100926021890" target="_blank">View / Apply on Naukri</a>
-      </div>
-    </div>
-
-    <div class="job-card" data-cat="udupi-mangalore med">
-      <div class="job-head">
-        <div>
-          <div class="job-title">Team Member – Site TC</div>
-          <div class="job-company">Adani Airport Holdings Ltd</div>
-          <div class="job-meta">Mangaluru, Karnataka &middot; Posted 3 days ago (~17 Sep 2026) &middot; Exp: Not explicitly stated — entry/graduate-adjacent (PR review, tender prep, vendor coordination, Techno-Commercial support)</div>
-        </div>
-        <span class="badge b-med">Medium confidence</span>
-      </div>
-      <div class="why"><b>Why it fits:</b> Vendor/PO coordination and tender-commercial support overlap well with her E-Way Bill/Goods Receipt documentation experience. Airport-authority employer — strong resume credential regardless of outcome.</div>
-      <div class="email-body" id="body13">Dear Hiring Team,
-
-I am interested in the Team Member – Site TC role at Adani Airport Holdings Ltd, Mangaluru. I hold a BCA degree and an Advanced Diploma in Logistics & Supply Chain Management, and gained practical experience in vendor coordination, purchase-request review, and documentation during my internship at Vega Transport, Manipal. I am proficient in Advanced Excel for reporting and data handling.
-
-I would welcome the opportunity to contribute to your Techno-Commercial team.
-
-Regards,
-Ruthika C
-+91 9741915287 | ruthikanaik38@gmail.com</div>
-      <div class="actions">
-        <button class="btn btn-copy" onclick="copyEmail('body13',this)">Copy Email</button>
-        <span class="copied">Copied!</span>
-        <a class="btn btn-apply" href="https://in.linkedin.com/jobs/view/team-member-%E2%80%93-site-tc-at-adani-airport-holdings-ltd-4457906871" target="_blank">View / Apply on LinkedIn</a>
-      </div>
-    </div>
-
-    <div class="job-card" data-cat="udupi-mangalore med">
-      <div class="job-head">
-        <div>
-          <div class="job-title">Export Manager</div>
-          <div class="job-company">Culture Highway Consulting Solutions</div>
-          <div class="job-meta">Mangaluru, Karnataka &middot; Posted 2 days ago (18 Sep 2026 — very fresh) &middot; Exp: 1–5 years, Export/Import Documentation, Shipping &amp; Logistics Coordination, Customs Clearance</div>
-        </div>
-        <span class="badge b-med">Medium confidence</span>
-      </div>
-      <div class="why"><b>Why it fits:</b> Strongest direct functional overlap of any regional lead — export/import documentation and shipping coordination map closely onto her E-Way Bill and Goods Receipt internship work. The 1–5 yr band may skew above pure entry-level, but the domain match makes it worth a direct application with the internship experience foregrounded.</div>
-      <div class="email-body" id="body14">Dear Hiring Team,
-
-I am writing to apply for the Export Manager position at Culture Highway Consulting Solutions, Mangaluru. I hold a BCA degree and an Advanced Diploma in Logistics & Supply Chain Management, and completed a hands-on internship at Vega Transport, Manipal focused specifically on Goods Receipt processes and E-Way Bill documentation — directly relevant to export/import documentation and logistics coordination. I am proficient in Advanced Excel and comfortable coordinating with transport and operational stakeholders.
-
-While I am early in my career, I believe my documentation-focused internship experience is a strong practical foundation for this role, and I am eager to grow into it.
-
-Regards,
-Ruthika C
-+91 9741915287 | ruthikanaik38@gmail.com</div>
-      <div class="actions">
-        <button class="btn btn-copy" onclick="copyEmail('body14',this)">Copy Email</button>
-        <span class="copied">Copied!</span>
-        <a class="btn btn-apply" href="https://www.naukri.com/job-listings-export-manager-culture-highway-consulting-solutions-mangaluru-1-to-5-years-180926014641" target="_blank">View / Apply on Naukri</a>
-      </div>
-    </div>
-
-    <div class="job-card" data-cat="udupi-mangalore med">
-      <div class="job-head">
-        <div>
-          <div class="job-title">Hiring Fresher for Sales and Operation Role</div>
-          <div class="job-company">Calibre Infotech</div>
-          <div class="job-meta">Mangaluru (+ Mysuru / Belagavi) &middot; Posted 1 week ago (~10–13 Sep 2026) &middot; Exp: 0 years — true fresher role &middot; ₹4–5.5 LPA</div>
-        </div>
-        <span class="badge b-med">Medium confidence</span>
-      </div>
-      <div class="why"><b>Why it fits:</b> Perfect freshness and experience-level match, and a solid regional salary. <b>Flag:</b> this is a BFSI/banking savings-account sales role, not logistics/SCM — a domain mismatch from her target field. Worth keeping as a fallback option if the SCM-specific leads don't convert, not a first choice.</div>
-      <div class="actions">
-        <a class="btn btn-apply" href="https://www.naukri.com/job-listings-hiring-fresher-for-sales-and-operation-role-calibre-infotech-mangaluru-mysuru-belagavi-0-to-0-years-100926031221" target="_blank">View / Apply on Naukri</a>
-      </div>
-    </div>
-
-  </div>
-</section>
-
-<section id="dropped">
-  <h2>What Was Excluded (and why)</h2>
-  <div class="flag">
-  <b>Bangalore — dropped as Low confidence after full-JD verification:</b>
-  <ul>
-    <li><b>GO DESi — Procurement Executive, Packaging:</b> requires a Bachelor's degree specifically in Packaging Technology + 2–3 yrs experience. Hard degree mismatch.</li>
-    <li><b>Duruper — Supply Chain Executive:</b> JD content returned was mismatched/inconsistent (referenced "LG Soft India" as employer inside a Duruper-branded listing) and required a Master's degree — both a legitimacy flag and a disqualifier.</li>
-    <li><b>Kennametal — Associate, Stores:</b> live posting had almost no content — no stated experience requirement or responsibilities, too thin to assess or recommend confidently.</li>
-    <li><b>Myntra — Associate, Instock Analyst:</b> requires SQL and BI tools (Tableau/Power BI) she doesn't currently have, plus a more specialized degree field (Engineering/Statistics/Business Analytics).</li>
-    <li><b>TE Connectivity — Operations Development Associate:</b> requires 1–3 years' professional experience and a degree from a "highly regarded university" — signals a more competitive, non-fresher applicant pool.</li>
-  </ul>
-  <b>Udupi/Mangalore — rejected on experience-gap grounds (fresh postings, but not fresher-eligible):</b>
-  <ul>
-    <li><b>Adani Airport Holdings — Duty Manager, Pranaam Operations:</b> requires 3–5 years hospitality/airport-ops experience.</li>
-    <li><b>PepsiCo — Field Sales Management Coordinator, Mangaluru:</b> requires 5 years FMCG Sales & Distribution experience.</li>
-    <li><b>Mackenzie Engineering — Industrial Procurement / Purchase Engineer, Mangaluru:</b> posted 1 day ago (very fresh) but requires 2–5 years OEM/hazardous-area procurement background.</li>
-  </ul>
-  <p class="small">Also checked and confirmed <b>no active listings</b>: MRPL (Mangalore Refinery) careers page — no open recruitment drive live as of 20 Sep 2026 (last Apprentice Trainee drive closed 19 Sep). Manipal Technologies / MAHE — only roles 2+ years or unrelated departments (Quality, Production) were open.</p>
-  </div>
+</div>
 </section>
 
 <section id="plan">
-  <h2>Application Plan</h2>
-  <table>
-    <thead><tr><th>Priority</th><th>Company / Role</th><th>Channel</th><th>Notes</th></tr></thead>
-    <tbody>
-      <tr><td><b>1</b></td><td>Accenture ×3 (Supply Chain Ops, Procurement Ops, Procurement Practice)</td><td>LinkedIn Apply</td><td>Explicitly fresher-targeted, apply to all three same day</td></tr>
-      <tr><td><b>2</b></td><td>Amazon — Process Assistant BLR7</td><td>LinkedIn Apply</td><td>Lowest requirement bar of all leads</td></tr>
-      <tr><td><b>3</b></td><td>G R Infraprojects — Executive (Stores), Mangaluru</td><td>Naukri Apply</td><td>Best regional functional match</td></tr>
-      <tr><td><b>4</b></td><td>Birla Pivot — Logistics Executive</td><td>LinkedIn message to Rupali Nayak + Apply</td><td>Contract role — confirm terms before committing</td></tr>
-      <tr><td><b>5</b></td><td>factori.com — Management Trainee</td><td>Direct email: career@factori.com</td><td>Only verified HR inbox — send personalized email, not just portal apply</td></tr>
-      <tr><td><b>6</b></td><td>bigbasket — Store Supervisor, Mangaluru</td><td>Call/WhatsApp Chaithra: 8431933007</td><td>Direct human contact — call during business hours</td></tr>
-      <tr><td><b>7</b></td><td>Culture Highway — Export Manager, Mangaluru</td><td>Naukri Apply</td><td>Strongest domain overlap regionally</td></tr>
-      <tr><td><b>8</b></td><td>Remaining Bangalore Medium leads (RentoMojo, Rempact, Zimmer Biomet, Blitz)</td><td>LinkedIn Apply</td><td>Apply same week, no direct contact available</td></tr>
-      <tr><td><b>9</b></td><td>Adani Airport — Team Member Site TC</td><td>LinkedIn Apply</td><td>Good credential value even if competitive</td></tr>
-      <tr><td><b>10</b></td><td>Calibre Infotech — Sales &amp; Ops fresher role</td><td>Naukri Apply</td><td>Fallback only — domain mismatch (BFSI sales)</td></tr>
-    </tbody>
-  </table>
-  <p class="small">Recommended send window: weekday mornings, 9:30–11:30 AM IST, when recruiters triage overnight applications first.</p>
+<div class="kicker">03 — Application plan</div><h2>What to do tonight and tomorrow</h2>
+<div class="tablewrap"><table><thead><tr><th>Order</th><th>Lead</th><th>Action</th><th>Message angle</th></tr></thead><tbody>
+<tr><td>1</td><td>Accenture — Supply Chain Operations New Associate</td><td>Apply immediately</td><td>0–1 year; lead with diploma, Excel, Goods Receipt and E-Way Bill experience.</td></tr>
+<tr><td>2</td><td>JobTrade — Operation Executive</td><td>Apply immediately</td><td>Documentation, order coordination, client/vendor follow-up.</td></tr>
+<tr><td>3</td><td>JobTrade — Logistics Coordinator</td><td>Apply immediately</td><td>Freshers accepted; explicitly mention Kannada + Hindi fluency.</td></tr>
+<tr><td>4</td><td>FAMOS — Pricing &amp; Operation Executive</td><td>Email public inbox + LinkedIn application</td><td>Ask to be considered for junior/entry-level logistics operations if the mid-senior band is strict.</td></tr>
+<tr><td>5</td><td>Blitz / Myntra / Birla Pivot</td><td>Apply with honest gap note</td><td>Do not inflate experience; frame internship as hands-on operational exposure.</td></tr>
+<tr><td>6</td><td>YosAid</td><td>Only if product-ops pivot is wanted</td><td>Position BCA + Excel + structured documentation; acknowledge platform learning.</td></tr>
+<tr><td>7</td><td>Rempact / Laundryheap</td><td>Apply within 24 hours</td><td>Fulfilment, inventory, dispatch, records and coordination.</td></tr>
+</tbody></table></div>
+<div class="alert good"><b>Recommended send window:</b> 9:30–11:30 AM IST on the next working day. For postings under one day old, apply first and send the tailored message immediately rather than waiting.</div>
 </section>
 
 <section id="method">
-  <h2>Methodology</h2>
-  <div class="card">
-    <p>Research was run in two passes using live browser automation (not cached search snippets):</p>
-    <ol>
-      <li><b>Discovery pass</b> — two parallel research agents covered Bangalore and Udupi/Mangalore separately, searching LinkedIn Jobs (via its public jobs-guest detail API, which bypasses the authwall for individual postings) and Naukri.com directly, plus Bing-based searches for LinkedIn recruiter posts with inline contact emails.</li>
-      <li><b>Verification pass</b> — every single lead surfaced in the discovery pass was re-opened individually to confirm the exact posting date/recency text, the full stated experience requirement, any hidden disqualifying requirement buried in the JD body (specific degree, certification, years-of-experience), and to search separately for a recruiter/HR email.</li>
-    </ol>
-    <p>Naukri posting dates were additionally cross-checked against the DDMMYY date code embedded in each job's URL. All 15 jobs in this report were confirmed live and dated on or after 5 September 2026 as of the verification date, 20 September 2026.</p>
-    <p class="small">No recruiter emails were fabricated. Where no email could be found, the report says so explicitly and directs to the platform's own Apply button, or — where available — a named recruiter's LinkedIn profile or a direct phone/WhatsApp contact.</p>
-  </div>
-</section>
-
-<footer>
-  Generated 20 September 2026. All postings independently verified live via LinkedIn and Naukri.com. This report will not be updated automatically — postings should be re-verified if applying more than a few days after generation, as fresher-level roles fill quickly.
-</footer>
-
+<div class="kicker">04 — Verification log</div><h2>What was checked, and what was not</h2>
+<div class="card">
+<p><b>Candidate source:</b> Ruthika C's attached CV. Extracted facts used: Udupi location, BCA, Advanced Diploma in Logistics &amp; Supply Chain Management, Vega Transport internship, Goods Receipt, E-Way Bill, Advanced Excel, Kannada/Hindi/English.</p>
+<p><b>Google-dork pass:</b> Ran <span class="mono">site:</span> queries for LinkedIn Jobs, Indeed, Naukri and Foundit by title/location/date. Google itself redirected to a Google “sorry” CAPTCHA page; per the browser workflow, the same dorks were then run through Bing/web search and every shortlisted individual LinkedIn page was opened directly. Search snippets were used for discovery only, not treated as proof where the individual page contradicted them.</p>
+<p><b>TinyFish:</b> The requested TinyFish API was attempted against the live automation endpoint. It returned HTTP 401 with <span class="mono">MISSING_API_KEY — X-API-Key is required</span>; no TinyFish key or MCP server is configured in this Hermes profile. I therefore did not claim TinyFish verification. Live browser/page extraction was used as the fallback.</p>
+<p><b>Open status rule:</b> a lead was retained only when the live listing page was reachable and did not show a closed/no-longer-accepting message. “Public page reachable” is not a guarantee that an employer will still accept an application; re-open the link immediately before sending.</p>
+<p><b>Udupi result:</b> no role in the requested functional family passed a strict “less than seven days + live/open + adequate detail” check. Manipal Technologies' “Supply Chain Management” listing appeared as “1 week ago” or had conflicting relative ages across search surfaces, so it was excluded rather than presented as a fresh lead.</p>
 </div>
-
+<h3 style="margin-top:24px">Source register</h3>
+<div class="tablewrap"><table><thead><tr><th>Lead</th><th>Primary live source</th><th>Freshness evidence</th><th>Confidence note</th></tr></thead><tbody>
+<tr><td>Accenture x2</td><td><a target="_blank" href="https://in.linkedin.com/jobs/view/supply-chain-operations-new-associate-at-accenture-in-india-4467270774">LinkedIn 4467270774</a> and <a target="_blank" href="https://in.linkedin.com/jobs/view/supply-chain-operations-associate-at-accenture-in-india-4467279059">4467279059</a></td><td>7 minutes ago at verification</td><td>First role is 0–1 years; second is 1–3.</td></tr>
+<tr><td>JobTrade x2</td><td><a target="_blank" href="https://in.linkedin.com/jobs/view/operation-executive-at-jobtrade-4468435101">Operation Executive</a> · <a target="_blank" href="https://in.linkedin.com/jobs/view/logistics-coordinator-at-jobtrade-4468052399">Logistics Coordinator</a></td><td>14 hours / 1 day</td><td>Both entry-level; logistics role explicitly accepts freshers.</td></tr>
+<tr><td>FAMOS</td><td><a target="_blank" href="https://in.linkedin.com/jobs/view/pricing-operation-executive-logistics-at-famos-int-l-freight-company-4464757458">LinkedIn 4464757458</a></td><td>38 minutes ago</td><td>Strong functional fit, but page labels mid-senior.</td></tr>
+<tr><td>Blitz</td><td><a target="_blank" href="https://in.linkedin.com/jobs/view/operations-executive-control-tower-at-blitz-4467843968">LinkedIn 4467843968</a></td><td>2 days</td><td>Requires bachelor's plus minimum 1 year.</td></tr>
+<tr><td>Myntra</td><td><a target="_blank" href="https://in.linkedin.com/jobs/view/associate-hyperlocal-supply-at-myntra-4448168707">LinkedIn 4448168707</a></td><td>Indexed 5 days</td><td>Requires 1–3 years; excellent functional overlap.</td></tr>
+<tr><td>Birla Pivot</td><td><a target="_blank" href="https://in.linkedin.com/jobs/view/operation-executive-logistics-at-birla-pivot-4465959602">LinkedIn 4465959602</a></td><td>4 days</td><td>Requires 1–2 years; 11-month off-roll contract.</td></tr>
+<tr><td>YosAid</td><td><a target="_blank" href="https://in.linkedin.com/jobs/view/product-operations-associate-at-yosaid-innovation-foundation-4468649337">LinkedIn 4468649337</a></td><td>3 days</td><td>Adjacent product-ops role; requires 1–3 years and platform exposure.</td></tr>
+<tr><td>Rempact</td><td><a target="_blank" href="https://in.linkedin.com/jobs/view/operations-executive-at-rempact-4465774545">LinkedIn 4465774545</a></td><td>6 days</td><td>Strong operational overlap; 1–3 years stated, internship type.</td></tr>
+<tr><td>Laundryheap</td><td><a target="_blank" href="https://in.linkedin.com/jobs/view/logistics-operations-associate-at-laundryheap-4466833934">LinkedIn 4466833934</a></td><td>Indexed 4 days</td><td>Full details/experience not exposed in public page.</td></tr>
+</tbody></table></div>
+</section>
+<footer>Prepared for Ruthika C · Generated 20 September 2026 · Recheck every listing before applying because job-board status can change quickly.</footer>
+</div>
 <script>
-function copyEmail(id, btn){
-  const text = document.getElementById(id).innerText;
-  navigator.clipboard.writeText(text).then(()=>{
-    const span = btn.nextElementSibling;
-    span.style.display = 'inline';
-    setTimeout(()=>{ span.style.display='none'; }, 1800);
-  });
-}
-const filterBtns = document.querySelectorAll('.filter-btn');
-const cards = document.querySelectorAll('.job-card');
-filterBtns.forEach(btn=>{
-  btn.addEventListener('click', ()=>{
-    filterBtns.forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    const f = btn.dataset.filter;
-    cards.forEach(c=>{
-      const cats = c.dataset.cat.split(' ');
-      if(f==='all'){ c.style.display='block'; }
-      else if(f==='high'){ c.style.display = cats.includes('high') ? 'block':'none'; }
-      else if(f==='hasemail'){ c.style.display = cats.includes('hasemail') ? 'block':'none'; }
-      else { c.style.display = cats.includes(f) ? 'block':'none'; }
-    });
-  });
-});
+function copyText(id,btn){const t=document.getElementById(id).innerText;navigator.clipboard.writeText(t).then(()=>{const m=btn.nextElementSibling;m.style.display='inline';setTimeout(()=>m.style.display='none',1600)}).catch(()=>alert('Select and copy the email text manually.'))}
+const buttons=document.querySelectorAll('.filter'), cards=document.querySelectorAll('.job');buttons.forEach(b=>b.onclick=()=>{buttons.forEach(x=>x.classList.remove('active'));b.classList.add('active');const f=b.dataset.filter;cards.forEach(c=>{const cats=c.dataset.cat.split(' ');c.style.display=f==='all'||cats.includes(f)?'block':'none'})})
 </script>
-
 </body>
 </html>
