@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fireworks AI — Fine-Tuning, Serving and Self-Hosting Costs</title>
+<style>
+:root{
+  --paper:#FAF8F2; --ink:#15171B; --body:#2A2E34; --muted:#6C7178;
+  --rule:#E0DACB; --rule2:#CFC7B4; --card:#FFFFFF;
+  --teal:#0E6B5E; --teal-soft:#E6F0EC; --rust:#B0451F; --rust-soft:#F8E9E2;
+  --amber:#8A5E06; --amber-soft:#FBF1D9;
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --mono:ui-monospace,"SF Mono",Consolas,"Liberation Mono",monospace;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--body);font-family:var(--sans);font-size:16px;line-height:1.62;
+  background-image:radial-gradient(circle at 12% -10%, #FFFFFF 0%, rgba(255,255,255,0) 45%);}
+.wrap{max-width:1080px;margin:0 auto;padding:0 30px}
+a{color:var(--teal);text-decoration:none;border-bottom:1px solid rgba(14,107,94,.35)}
+a:hover{border-bottom-color:var(--teal)}
+
+/* hero */
+.hero{background:#14161A;color:#F4F1E8;padding:54px 0 42px;border-bottom:3px solid var(--teal)}
+.hero .wrap{max-width:1080px}
+.kicker{font-size:11.5px;letter-spacing:.22em;text-transform:uppercase;color:#9AA3A8;margin:0 0 18px}
+h1{font-family:var(--serif);font-weight:600;font-size:46px;line-height:1.1;margin:0 0 16px;letter-spacing:-.01em;color:#FBF8EF}
+.hero p.dek{font-size:17px;line-height:1.6;color:#C8CDD0;max-width:760px;margin:0 0 24px}
+.meta{display:flex;flex-wrap:wrap;gap:26px;font-size:12.5px;color:#8D969C;border-top:1px solid #2C3037;padding-top:16px}
+.meta b{color:#E9E5D9;font-weight:600}
+
+/* kpi */
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--rule);border-bottom:1px solid var(--rule)}
+.kpi{background:var(--paper);padding:24px 22px}
+.kpi .n{font-family:var(--serif);font-size:30px;line-height:1.1;color:var(--ink);display:block;margin-bottom:6px}
+.kpi .l{font-size:12.5px;color:var(--muted);line-height:1.45}
+
+section{padding:46px 0 8px}
+h2{font-family:var(--serif);font-size:29px;font-weight:600;color:var(--ink);margin:0 0 6px;letter-spacing:-.01em;display:flex;gap:14px;align-items:baseline}
+h2 .num{font-family:var(--sans);font-size:12px;letter-spacing:.16em;color:var(--teal);border:1px solid rgba(14,107,94,.4);border-radius:3px;padding:3px 7px;font-weight:600;transform:translateY(-3px)}
+h3{font-family:var(--sans);font-size:15px;font-weight:700;letter-spacing:.01em;color:var(--ink);margin:30px 0 10px}
+p{margin:0 0 15px;max-width:78ch}
+.lead{font-size:17px;color:var(--body);max-width:80ch}
+.small{font-size:13.5px;color:var(--muted)}
+
+/* verdict box */
+.verdict{background:#fff;border:1px solid var(--rule);border-left:4px solid var(--teal);padding:26px 30px;margin:26px 0 8px;box-shadow:0 1px 0 rgba(21,23,27,.03)}
+.verdict h4{margin:0 0 14px;font-family:var(--sans);font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+.verdict ol{margin:0;padding-left:20px}
+.verdict li{margin:0 0 11px;font-size:15.4px;line-height:1.58}
+.verdict li:last-child{margin-bottom:0}
+.verdict b{color:var(--ink)}
+
+/* tables */
+table{width:100%;border-collapse:collapse;margin:14px 0 10px;font-size:13.6px;background:#fff}
+caption{caption-side:top;text-align:left;font-size:12px;letter-spacing:.04em;color:var(--muted);padding:0 0 8px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--rule);vertical-align:top}
+thead th{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700;border-bottom:1.5px solid var(--rule2);background:#FCFBF6}
+tbody tr:nth-child(even){background:#FDFCF8}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+td.mono,.mono{font-family:var(--mono);font-size:12.4px}
+tr.total td{font-weight:700;color:var(--ink);background:#F6F4EC;border-top:1.5px solid var(--rule2)}
+
+.chip{display:inline-block;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;padding:2px 7px;border-radius:2px;white-space:nowrap}
+.use{background:var(--teal-soft);color:var(--teal)}
+.pilot{background:var(--amber-soft);color:var(--amber)}
+.avoid{background:var(--rust-soft);color:var(--rust)}
+.neutral{background:#EFEDE6;color:#5C6167}
+
+/* callouts */
+.note{border:1px solid var(--rule);background:#fff;padding:18px 22px;margin:18px 0;font-size:14.4px}
+.note h5{margin:0 0 8px;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--teal);font-weight:700}
+.note.warn{border-left:3px solid var(--rust)} .note.warn h5{color:var(--rust)}
+.note.plain{border-left:3px solid var(--rule2)} .note.plain h5{color:var(--muted)}
+.note p:last-child{margin-bottom:0}
+blockquote{margin:16px 0;padding:12px 18px;border-left:3px solid var(--rule2);color:#4A4F55;font-size:14px;font-style:italic;background:#fff}
+blockquote cite{display:block;font-style:normal;font-size:11.5px;color:var(--muted);margin-top:6px;letter-spacing:.03em}
+
+/* charts */
+figure{margin:26px 0 10px;background:#fff;border:1px solid var(--rule);padding:20px 18px 12px}
+figure svg{width:100%;height:auto;display:block}
+figcaption{font-size:12.4px;color:var(--muted);margin-top:10px;line-height:1.5}
+.chart .lbl{font:12.4px var(--sans);fill:#2A2E34}
+.chart .val{font:12px var(--sans);fill:#15171B;font-weight:600}
+.chart .ax{font:11.5px var(--sans);fill:#8A8F95}
+
+.twocol{display:grid;grid-template-columns:1fr 1fr;gap:26px}
+ul.tight{margin:8px 0 16px;padding-left:20px}
+ul.tight li{margin-bottom:7px;font-size:14.6px}
+hr{border:0;border-top:1px solid var(--rule);margin:44px 0 0}
+footer{padding:34px 0 70px;color:var(--muted);font-size:13px}
+footer ol{padding-left:20px;font-size:12.6px;line-height:1.75;color:#4D5157}
+footer ol a{color:#3D4247;border-bottom-color:#C9C2B0}
+.tag{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+@media (max-width:820px){
+  h1{font-size:33px}.kpis{grid-template-columns:1fr 1fr}.twocol{grid-template-columns:1fr}
+  h2{font-size:23px;flex-wrap:wrap}table{font-size:12.6px}th,td{padding:8px 8px}
+  .hero{padding:38px 0 30px}.wrap{padding:0 18px}
+}
+@media print{
+  body{background:#fff;font-size:11pt}
+  .hero{background:#fff;color:#111;border-bottom:2px solid #111}
+  .hero h1,.hero p.dek,.meta,.kicker{color:#111}
+  section{page-break-inside:avoid}figure,table,.note,.verdict{page-break-inside:avoid}
+  a{color:#111;border:0}
+}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <p class="kicker">Cost analysis · Inference and fine-tuning</p>
+    <h1>Fireworks AI: what fine-tuning, serving and self-hosting actually cost</h1>
+    <p class="dek">A 27B model, a 70B model and a 552B mixture-of-experts model (DeepSeek V4.1 Flash), priced four ways: Fireworks fine-tuning, Fireworks serverless, the OpenRouter market, and your own GPUs.</p>
+    <div class="meta">
+      <span><b>Prepared</b> 10 November 2026</span>
+      <span><b>Currency</b> USD, list prices, tax excluded</span>
+      <span><b>Model classes</b> 27B dense · 70B dense · 552B MoE</span>
+      <span><b>Primary sources</b> fireworks.ai, openrouter.ai API, runpod.io, lambda.ai, deepseek.com</span>
+    </div>
+  </div>
+</header>
+
+<div class="kpis">
+  <div class="kpi"><span class="n">Yes</span><span class="l">Fireworks sells fine-tuning: SFT, DPO/ORPO and reinforcement learning, LoRA on most models.</span></div>
+  <div class="kpi"><span class="n">$3.00 / 1M</span><span class="l">training tokens for any base model from 16.1B to 80B. A 27B and a 72B cost the same per token.</span></div>
+  <div class="kpi"><span class="n">$8.00 / hr</span><span class="l">one H100, the same rate for training and serving. No separate charge for serving a model you trained.</span></div>
+  <div class="kpi"><span class="n">~12 billion</span><span class="l">blended tokens a month before one rented H100 starts to beat buying 27B tokens at OpenRouter.</span></div>
+</div>
+
+<div class="wrap">
+
+<div class="verdict">
+  <h4>Bottom line</h4>
+  <ol>
+    <li><b>Fine-tuning: yes, and it is the cheapest part of the plan.</b> A realistic 27B job — 120 million training tokens, LoRA — costs <b>$360</b> once. Full-parameter training costs twice that. No separate serving fee is added.</li>
+    <li><b>The catch is deployment, not training.</b> Fireworks does not let a model you trained run on its shared per-token endpoint. It must sit on dedicated GPUs at $8.00 per GPU-hour, which is <b>$5,840 a month</b> if you never switch it off.</li>
+    <li><b>For 27B and 70B, Fireworks has no per-token option at all.</b> Both classes are marked <span class="mono">Serverless: Not supported</span> — on-demand GPUs only. The same models trade on OpenRouter at $0.10–0.15 in / $0.32–1.88 out, so renting the hardware costs <b>2–7 times more</b> for a 27B and <b>10–40 times more</b> for a 70B.</li>
+    <li><b>DeepSeek V4.1 Flash is the opposite case.</b> It is 552B of mixture-of-experts, and Fireworks serves it per token at $0.30 / $1.20 (spot $0.21 / $0.84). Self-hosting it costs <b>$4.44–8.89 per million blended tokens</b> at full utilisation — 10 to 30 times the serverless price. It also <b>cannot be fine-tuned</b> at all.</li>
+    <li><b>Verdict.</b> Use Fireworks to fine-tune, and to serve flagship models where its price matches the market or you need data residency and an SLA. Do not use it as a cheap host for 27B or 70B models. OpenRouter is cheaper for off-the-shelf tokens; the only reasons to pay more are control, residency, latency and contractual uptime.</li>
+  </ol>
+</div>
+
+<p class="small" style="margin-top:18px">Blended cost = the average price of one token when prompt and answer tokens are mixed 4:1, the shape of a typical chat or agent workload. It is the only fair way to compare an input-heavy serverless price with a GPU rental bill.</p>
+
+<h3 style="margin-top:34px">Your questions, in order</h3>
+<table>
+  <thead><tr><th style="width:46%">Question</th><th>Short answer</th><th class="n" style="width:8%">Section</th></tr></thead>
+  <tbody>
+    <tr><td>Does Fireworks provide fine-tuning?</td><td>Yes — managed SFT, DPO/ORPO, RL, plus LoRA and full-parameter variants.</td><td class="n"><a href="#s2">02</a></td></tr>
+    <tr><td>What does a 27B fine-tune cost?</td><td>$108 to $900 one time for LoRA, depending on dataset size. $3.00 per 1M training tokens.</td><td class="n"><a href="#s2">02</a></td></tr>
+    <tr><td>What does it cost to serve that model?</td><td>$8.00 per GPU-hour, roughly $5,840 per month per H100 left running.</td><td class="n"><a href="#s4">04</a></td></tr>
+    <tr><td>Self-hosting 27B / 72B / DeepSeek-class?</td><td>27B: $0.62–2.47 per 1M blended. 72B: $1.58–6.35. 552B: $2.94–8.89. All at 100% utilisation.</td><td class="n"><a href="#s4">04</a></td></tr>
+    <tr><td>Is Fireworks cheaper than OpenRouter?</td><td>Usually not. It is equal on flagships (Kimi K3, GLM 5.3) and 2–3 times dearer than the cheapest mixed-provider route on DeepSeek.</td><td class="n"><a href="#s3">03</a></td></tr>
+    <tr><td>What should we actually do?</td><td>Buy tokens for off-the-shelf models, fine-tune on Fireworks for narrow tasks, avoid renting GPUs unless residency demands it.</td><td class="n"><a href="#s5">05</a></td></tr>
+  </tbody>
+</table>
+
+<section id="s1">
+  <h2><span class="num">01</span> What Fireworks actually sells</h2>
+  <p class="lead">Fireworks runs open models for you on three commercial shapes, and trains models on three more. The billing unit changes with the shape, and that unit is what decides your bill.</p>
+
+  <table>
+    <caption>Serving options</caption>
+    <thead><tr><th>Option</th><th>You pay</th><th>Commitment</th><th>Good for</th></tr></thead>
+    <tbody>
+      <tr><td><b>Serverless</b></td><td>Per token, from $0.05 per 1M input</td><td>None</td><td>Launching fast, spiky traffic</td></tr>
+      <tr><td><b>Reserved throughput</b></td><td>Dollars per minute, reserved</td><td>Yes</td><td>Steady production, 99.9% uptime SLA</td></tr>
+      <tr><td><b>On-demand deployment</b></td><td>Per GPU-second</td><td>None, but idle GPUs still bill</td><td>Models with no serverless option, your own trained models</td></tr>
+      <tr><td><b>Sovereign</b></td><td>Contract (enterprise preview)</td><td>Yes</td><td>Inference must stay inside your own cloud account</td></tr>
+    </tbody>
+  </table>
+
+  <p>On the serverless endpoint you also choose a mode per request, and the mode moves the price by up to 50%:</p>
+  <ul class="tight">
+    <li><b>Standard</b> — the default.</li>
+    <li><b>Priority</b> — 25% more, prioritised during peak load.</li>
+    <li><b>Fast</b> — 100+ tokens per second for interactive apps.</li>
+    <li><b>Batch</b> — 50% off input and output for work that can wait.</li>
+    <li><b>Spot</b> — 30% off Standard on spare capacity; throughput can fall to zero, so you need a fallback.</li>
+    <li><b>Cached input</b> — half price or less, no write fee. Long agent runs reach cache hit rates up to 99.6%.</li>
+  </ul>
+  <p class="small">Region surcharges: US-only serverless on selected models carries a 50% premium; a region-restricted GPU deployment is billed at 1.5 times the standard GPU rate.</p>
+
+  <table>
+    <caption>Training options</caption>
+    <thead><tr><th>Path</th><th>You pay</th><th>Who it is for</th></tr></thead>
+    <tbody>
+      <tr><td><b>Managed Training</b></td><td>Per 1M training tokens, from $0.50</td><td>Bring a dataset, pick a base model, launch SFT / DPO / ORPO from UI, CLI or API</td></tr>
+      <tr><td><b>Serverless Training API</b></td><td>Per token you prefill, sample and train</td><td>Your own training loop on a shared trainer pool; LoRA and RL</td></tr>
+      <tr><td><b>Dedicated Training API</b></td><td>Per GPU-hour, from $8.00</td><td>Full-parameter runs, the largest MoE models, higher LoRA ranks</td></tr>
+      <tr><td><b>Fireworks Lab</b></td><td>Per engagement</td><td>Fireworks researchers build the model with your team</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="s2">
+  <h2><span class="num">02</span> Fine-tuning: yes — here is the whole price list</h2>
+  <p class="lead">Training is billed per million tokens processed, not per GPU-hour, on the managed path. You estimate it the same way you estimate inference: dataset tokens multiplied by epochs.</p>
+
+  <table>
+    <caption>Managed Training, USD per 1M training tokens</caption>
+    <thead><tr><th>Base model size</th><th class="n">LoRA SFT</th><th class="n">LoRA DPO</th><th class="n">Full-param SFT</th><th class="n">Full-param DPO</th></tr></thead>
+    <tbody>
+      <tr><td>Up to 16B</td><td class="n">$0.50</td><td class="n">$1.00</td><td class="n">$1.00</td><td class="n">$2.00</td></tr>
+      <tr><td><b>16.1B – 80B</b> <span class="chip use">your case</span></td><td class="n"><b>$3.00</b></td><td class="n">$6.00</td><td class="n">$6.00</td><td class="n">$12.00</td></tr>
+      <tr><td>80B – 300B</td><td class="n">$6.00</td><td class="n">$12.00</td><td class="n">$12.00</td><td class="n">$24.00</td></tr>
+      <tr><td>Over 300B</td><td class="n">$10.00</td><td class="n">$20.00</td><td class="n">$20.00</td><td class="n">$40.00</td></tr>
+    </tbody>
+  </table>
+  <p class="small">A 27B model and a 72B model sit in the same band, so the training bill is identical. That is unusual — most providers charge by size at every step.</p>
+
+  <h3>Worked examples for a 27B or 72B base model</h3>
+  <table>
+    <caption>One-off training cost, LoRA SFT unless stated</caption>
+    <thead><tr><th>Dataset</th><th class="n">Training tokens</th><th class="n">Cost</th><th>Typical use</th></tr></thead>
+    <tbody>
+      <tr><td>5M tokens × 2 epochs</td><td class="n">10M</td><td class="n">$30</td><td>Format and tone fix, extraction on one document type</td></tr>
+      <tr><td>18M tokens × 2 epochs</td><td class="n">36M</td><td class="n">$108</td><td>20,000 examples at ~900 tokens, a solid first run</td></tr>
+      <tr><td>60M tokens × 2 epochs</td><td class="n">120M</td><td class="n">$360</td><td>50,000 richer examples, or reasoning traces</td></tr>
+      <tr><td>100M tokens × 3 epochs</td><td class="n">300M</td><td class="n">$900</td><td>Large domain corpus, continued specialisation</td></tr>
+      <tr><td>120M SFT + 20M DPO</td><td class="n">140M</td><td class="n">$480</td><td>Full package: teach the task, then tune preference between answers</td></tr>
+      <tr class="total"><td>Same 120M as <b>full-parameter</b> SFT</td><td class="n">120M</td><td class="n">$720</td><td>Only on selected models; otherwise use the Dedicated Training API</td></tr>
+    </tbody>
+  </table>
+
+  <figure>
+    <svg viewBox="0 0 760 270" class="chart" role="img" aria-label="Fine-tuning cost by training tokens"><line x1="96" y1="173.4" x2="656" y2="173.4" stroke="#EFEADE"/><text x="86" y="177.4" text-anchor="end" class="ax">$500</text><line x1="96" y1="120.7" x2="656" y2="120.7" stroke="#EFEADE"/><text x="86" y="124.7" text-anchor="end" class="ax">$1000</text><line x1="96" y1="68.1" x2="656" y2="68.1" stroke="#EFEADE"/><text x="86" y="72.1" text-anchor="end" class="ax">$1500</text><rect x="118.0" y="222.8" width="38" height="3.2" fill="#0E6B5E" rx="2"/><text x="137.0" y="215.8" text-anchor="middle" class="val">$30</text><rect x="166.0" y="219.7" width="38" height="6.3" fill="#C9C2B0" rx="2"/><text x="185.0" y="212.7" text-anchor="middle" class="val">$60</text><text x="161.0" y="246.0" text-anchor="middle" class="ax">10M tokens</text><rect x="258.0" y="214.6" width="38" height="11.4" fill="#0E6B5E" rx="2"/><text x="277.0" y="207.6" text-anchor="middle" class="val">$108</text><rect x="306.0" y="203.3" width="38" height="22.7" fill="#C9C2B0" rx="2"/><text x="325.0" y="196.3" text-anchor="middle" class="val">$216</text><text x="301.0" y="246.0" text-anchor="middle" class="ax">36M tokens</text><rect x="398.0" y="188.1" width="38" height="37.9" fill="#0E6B5E" rx="2"/><text x="417.0" y="181.1" text-anchor="middle" class="val">$360</text><rect x="446.0" y="150.2" width="38" height="75.8" fill="#C9C2B0" rx="2"/><text x="465.0" y="143.2" text-anchor="middle" class="val">$720</text><text x="441.0" y="246.0" text-anchor="middle" class="ax">120M tokens</text><rect x="538.0" y="131.3" width="38" height="94.7" fill="#0E6B5E" rx="2"/><text x="557.0" y="124.3" text-anchor="middle" class="val">$900</text><rect x="586.0" y="36.5" width="38" height="189.5" fill="#C9C2B0" rx="2"/><text x="605.0" y="29.5" text-anchor="middle" class="val">$1800</text><text x="581.0" y="246.0" text-anchor="middle" class="ax">300M tokens</text><line x1="96" y1="226" x2="656" y2="226" stroke="#B9B2A0"/></svg>
+    <figcaption>One-off training cost for a 16.1B–80B base model. Dark bars: LoRA SFT at $3.00 per 1M tokens. Light bars: full-parameter SFT at $6.00 per 1M tokens.</figcaption>
+  </figure>
+
+  <h3>The catch nobody puts in the headline</h3>
+  <blockquote>“Neither custom base models nor LoRA addons are supported for serverless inference. All user-provided models, including trained models, require a dedicated deployment.”
+    <cite>Fireworks documentation, Models overview</cite>
+  </blockquote>
+  <p>So a $360 fine-tune does not unlock a cheap per-token endpoint. It hands you a model that only runs on GPUs you rent by the second. Fireworks is explicit that the training itself adds no serving surcharge — “you pay for the deployment by the GPU-second, plus the cost of the training job” — but the deployment is the expensive half:</p>
+  <table>
+    <thead><tr><th>Deployment for a tuned 27B</th><th class="n">Hourly</th><th class="n">Monthly, 24/7</th><th class="n">Monthly, 4 hrs/day</th></tr></thead>
+    <tbody>
+      <tr><td>1 × H100 80GB, always available</td><td class="n">$8.00</td><td class="n">$5,840</td><td class="n">$973</td></tr>
+      <tr><td>2 × H100 80GB, for the 262K context window</td><td class="n">$16.00</td><td class="n">$11,680</td><td class="n">$1,946</td></tr>
+    </tbody>
+  </table>
+  <p class="small">Idle deployments scale to zero after one hour by default, so low-traffic internal tools can pay only for the hours they are actually used.</p>
+
+  <div class="note warn">
+    <h5>Two things you cannot fine-tune</h5>
+    <p><b>DeepSeek V4.1 Flash:</b> “Fine-tuning is not supported for DeepSeek V4.1 Flash on Fireworks, and no V4.1 variant offers it.” You can only buy its tokens.</p>
+    <p><b>Anything you cannot name in the model library:</b> the tunable list is model by model. Qwen3.8 27B, Qwen3.6 27B and Llama 3.3 70B all say “Fine-tuning supported”; the DeepSeek V4.1 family does not.</p>
+  </div>
+
+  <div class="note">
+    <h5>Free right now</h5>
+    <p>Managed SFT of <b>Muse Glimmer 30B</b> is free through 30 November 2026, in the UI and through the Serverless Training API, with no credit card. It is a 30B model in your exact size band — the cheapest way to test whether a tuned mid-size model beats the big model you are paying for today.</p>
+  </div>
+
+  <h3>If you write your own training loop</h3>
+  <table>
+    <caption>Serverless Training API, selected models, USD per 1M tokens</caption>
+    <thead><tr><th>Base model</th><th class="n">Context</th><th class="n">Prefill</th><th class="n">Cached prefill</th><th class="n">Sample</th><th class="n">Train</th></tr></thead>
+    <tbody>
+      <tr><td>Qwen 3.8 27B</td><td class="n">128K</td><td class="n">$1.86</td><td class="n">$0.372</td><td class="n">$5.595</td><td class="n">$4.103</td></tr>
+      <tr><td>Muse Glimmer 30B</td><td class="n">128K</td><td class="n">$1.96</td><td class="n">$0.39</td><td class="n">$4.88</td><td class="n">$5.86</td></tr>
+      <tr><td>DeepSeek V4.1 Flash 1017</td><td class="n">256K</td><td class="n">$0.60</td><td class="n">$0.12</td><td class="n">$3.60</td><td class="n">$4.98</td></tr>
+      <tr><td>Kimi K3</td><td class="n">192K</td><td class="n">$10.87</td><td class="n">$2.17</td><td class="n">$27.11</td><td class="n">$32.55</td></tr>
+    </tbody>
+  </table>
+  <p class="small">Repeated prefixes bill 80% off. A custom reinforcement-learning run is cheap on tokens and expensive in engineering time — budget weeks, not dollars, for that path.</p>
+</section>
+
+<section id="s3">
+  <h2><span class="num">03</span> What a token costs: Fireworks against the market</h2>
+  <p class="lead">Prices below are live list rates, pulled on 10 November 2026. The OpenRouter figures are the cheapest working endpoint for that exact model on that day, taken from the OpenRouter model API, not from a marketing page.</p>
+
+  <table>
+    <caption>USD per 1M tokens: input / output, with the 4:1 blended figure</caption>
+    <thead><tr><th>Model</th><th class="n">Fireworks</th><th class="n">Cheapest on OpenRouter</th><th class="n">Official API</th><th class="n">Cheapest blended</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><b>DeepSeek V4.1 Flash</b><br><span class="small">552B MoE, 8B active on prefill, 16B on decode</span></td>
+        <td class="n">$0.30 / $1.20<br><span class="small">spot $0.21 / $0.84</span></td>
+        <td class="n">$0.112 / $0.336<br><span class="small">DeepInfra, fp8</span></td>
+        <td class="n">$0.30 / $1.20 peak<br><span class="small">$0.15 / $0.60 off-peak</span></td>
+        <td class="n">$0.157</td>
+      </tr>
+      <tr>
+        <td><b>Qwen3.8 27B</b><br><span class="small">dense, 262K context, vision</span></td>
+        <td class="n"><span class="chip avoid">No per-token price</span><br><span class="small">on-demand GPUs only</span></td>
+        <td class="n">$0.035 / $1.50<br><span class="small">Darkbloom, fp4</span></td>
+        <td class="n">$0.035 / $0.90<br><span class="small">Qwen direct</span></td>
+        <td class="n">$0.328</td>
+      </tr>
+      <tr>
+        <td><b>Llama 3.3 70B</b><br><span class="small">dense, 131K context</span></td>
+        <td class="n"><span class="chip avoid">No per-token price</span><br><span class="small">on-demand GPUs only</span></td>
+        <td class="n">$0.10 / $0.32<br><span class="small">DeepInfra, fp8</span></td>
+        <td class="n">—</td>
+        <td class="n">$0.144</td>
+      </tr>
+      <tr>
+        <td><b>Kimi K3</b><br><span class="small">flagship, 1M context</span></td>
+        <td class="n">$3.00 / $15.00</td>
+        <td class="n">$0.182 / $9.339<br><span class="small">Relace, fp4</span></td>
+        <td class="n">$3.00 / $15.00<br><span class="small">Moonshot direct</span></td>
+        <td class="n">$2.013</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>Three patterns matter more than any single number:</p>
+  <ul class="tight">
+    <li><b>On flagships, Fireworks is at the market price, not below it.</b> Kimi K3 at $3.00 / $15.00 is exactly what Moonshot, Together and Baseten charge. Gemini-tier margins are not on offer here.</li>
+    <li><b>On DeepSeek, Fireworks sits in the middle of a very wide field.</b> 37 endpoints serve that same model on OpenRouter, from $0.112 / $0.336 to $0.45 / $1.80 — a 4× spread for identical weights. Fireworks is roughly 2.7× the cheapest on input.</li>
+    <li><b>The mid-size models you asked about are not on Fireworks serverless at all.</b> A 27B or a 70B there means a GPU rental, so comparing it with a per-token price is comparing a fixed cost with a variable one.</li>
+  </ul>
+
+  <div class="note plain">
+    <h5>Why the same model has six prices</h5>
+    <p>Quantization, uptime and rate limits. A 27B sold at $0.035 input is running 4-bit weights; the same model at 16-bit costs several times more to serve and is priced accordingly. Artificial Analysis publishes an endpoint accuracy index for exactly this reason: cheaper endpoints can lose measurable accuracy against the reference. When a price looks too good, check the quantization column before switching.</p>
+  </div>
+
+  <figure>
+    <svg viewBox="0 0 1000 336" class="chart" role="img" aria-label="Cost per million blended tokens on a log scale"><line x1="316.0" y1="14" x2="316.0" y2="304" stroke="#E6E0D2"/><text x="316.0" y="324" text-anchor="middle" class="ax">$0.1</text><line x1="446.0" y1="14" x2="446.0" y2="304" stroke="#E6E0D2"/><text x="446.0" y="324" text-anchor="middle" class="ax">$0.3</text><line x1="588.5" y1="14" x2="588.5" y2="304" stroke="#E6E0D2"/><text x="588.5" y="324" text-anchor="middle" class="ax">$1</text><line x1="718.5" y1="14" x2="718.5" y2="304" stroke="#E6E0D2"/><text x="718.5" y="324" text-anchor="middle" class="ax">$3</text><line x1="861.0" y1="14" x2="861.0" y2="304" stroke="#E6E0D2"/><text x="861.0" y="324" text-anchor="middle" class="ax">$10</text><text x="302" y="44" text-anchor="end" class="lbl">OpenRouter cheapest endpoint (DeepInfra, fp8)</text><circle cx="369.4" cy="39" r="6" fill="#0E6B5E"/><text x="382.4" y="44" class="val">$0.16</text><text x="302" y="90" text-anchor="end" class="lbl">DeepSeek official API, off-peak</text><circle cx="419.6" cy="85" r="6" fill="#0E6B5E"/><text x="432.6" y="90" class="val">$0.24</text><text x="302" y="136" text-anchor="end" class="lbl">Fireworks serverless, spot tier</text><circle cx="459.4" cy="131" r="6" fill="#0E6B5E"/><text x="472.4" y="136" class="val">$0.34</text><text x="302" y="182" text-anchor="end" class="lbl">Fireworks serverless, standard</text><circle cx="501.6" cy="177" r="6" fill="#0E6B5E"/><text x="514.6" y="182" class="val">$0.48</text><text x="302" y="228" text-anchor="end" class="lbl">Self-host, 8× H200 on RunPod</text><rect x="716.1" y="215" width="82.0" height="16" rx="8" fill="#B0451F" opacity=".85"/><text x="810.2" y="228" class="val">$2.94–5.88</text><text x="302" y="274" text-anchor="end" class="lbl">Self-host, 8× H200 on Fireworks</text><rect x="764.9" y="261" width="82.2" height="16" rx="8" fill="#B0451F" opacity=".85"/><text x="859.1" y="274" class="val">$4.44–8.89</text><line x1="316" y1="14" x2="316" y2="304" stroke="#B9B2A0"/></svg>
+    <figcaption>Cost of 1 million blended tokens (4 prompt tokens to 1 answer token) for DeepSeek V4.1 Flash. Green dots are point prices. Orange bars are the cost range produced by the throughput band, at full utilisation, before any engineering cost.</figcaption>
+  </figure>
+</section>
+
+<section id="s4">
+  <h2><span class="num">04</span> Self-hosting: the real arithmetic</h2>
+  <p class="lead">Renting a GPU is a fixed cost per hour. Buying tokens is a variable cost per token. The only question that matters is how many tokens per hour your GPU can actually produce, and how much of the day it is busy.</p>
+
+  <table>
+    <caption>GPU rates, USD per hour, checked 10 November 2026</caption>
+    <thead><tr><th>GPU</th><th class="n">Fireworks</th><th class="n">RunPod (secure)</th><th class="n">Lambda</th></tr></thead>
+    <tbody>
+      <tr><td>H100 80GB</td><td class="n">$8.00</td><td class="n">$3.99</td><td class="n">$4.59</td></tr>
+      <tr><td>H200 141GB</td><td class="n">$8.00</td><td class="n">$5.29</td><td class="n">—</td></tr>
+      <tr><td>B200 180GB</td><td class="n">$13.00</td><td class="n">—</td><td class="n">$7.69</td></tr>
+      <tr><td>B300 288GB</td><td class="n">$15.00</td><td class="n">—</td><td class="n">—</td></tr>
+    </tbody>
+  </table>
+  <p class="small">Fireworks charges the same for H100 and H200, which makes the H200 the obvious pick whenever a model fits. Its GPU price is roughly double the raw rental market because the price includes the serving engine, autoscaling, an SLA and no operations work.</p>
+
+  <h3>What each model class needs</h3>
+  <table>
+    <caption>Memory is computed from weights at fp8 plus room for cache. 730 hours per month.</caption>
+    <thead><tr><th>Model class</th><th class="n">Weights</th><th class="n">GPUs</th><th class="n">Fireworks</th><th class="n">RunPod</th><th class="n">Lambda</th></tr></thead>
+    <tbody>
+      <tr><td><b>27B dense</b> <span class="small">(Qwen3.8 27B)</span></td><td class="n">27 GB</td><td class="n">1 × H100</td><td class="n">$5,840 / mo</td><td class="n">$2,913 / mo</td><td class="n">$3,351 / mo</td></tr>
+      <tr><td><b>70B dense</b> <span class="small">(Llama 3.3 70B)</span></td><td class="n">71 GB</td><td class="n">2 × H100</td><td class="n">$11,680 / mo</td><td class="n">$5,825 / mo</td><td class="n">$6,701 / mo</td></tr>
+      <tr><td><b>552B MoE</b> <span class="small">(DeepSeek V4.1 Flash)</span></td><td class="n">~552 GB</td><td class="n">8 × H200</td><td class="n">$46,720 / mo</td><td class="n">$30,894 / mo</td><td class="n">—</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Cost per million blended tokens</h3>
+  <p>A single H100 serving a 27B model at a 4:1 prompt-to-answer ratio realistically sustains 900 to 1,800 tokens per second of mixed traffic. At 70B on two H100s, 700 to 1,400. A 552B MoE on eight H200s, 2,000 to 4,000 — mixture-of-experts is cheap to decode because only 16B parameters fire per token. Those are engineering estimates with a generous band; treat them as ±50%.</p>
+
+  <table>
+    <caption>USD per 1M blended tokens at three utilisation levels</caption>
+    <thead><tr><th>Setup</th><th class="n">100% busy</th><th class="n">50% busy</th><th class="n">20% busy</th></tr></thead>
+    <tbody>
+      <tr><td>27B on 1 × H100, Fireworks $8.00</td><td class="n">$1.23 – $2.47</td><td class="n">$2.47 – $4.94</td><td class="n">$6.17 – $12.35</td></tr>
+      <tr><td>27B on 1 × H100, RunPod $3.99</td><td class="n">$0.62 – $1.23</td><td class="n">$1.23 – $2.47</td><td class="n">$3.08 – $6.17</td></tr>
+      <tr><td>70B on 2 × H100, Fireworks $16.00</td><td class="n">$3.17 – $6.35</td><td class="n">$6.35 – $12.70</td><td class="n">$15.87 – $31.75</td></tr>
+      <tr><td>70B on 2 × H100, RunPod $7.98</td><td class="n">$1.58 – $3.17</td><td class="n">$3.17 – $6.35</td><td class="n">$7.92 – $15.87</td></tr>
+      <tr><td>552B MoE on 8 × H200, Fireworks $64.00</td><td class="n">$4.44 – $8.89</td><td class="n">$8.89 – $17.78</td><td class="n">$22.22 – $44.44</td></tr>
+      <tr><td>552B MoE on 8 × H200, RunPod $42.32</td><td class="n">$2.94 – $5.88</td><td class="n">$5.88 – $11.76</td><td class="n">$14.69 – $29.39</td></tr>
+      <tr class="total"><td>For comparison: OpenRouter, same models</td><td class="n" colspan="3">27B $0.33 · 70B $0.14 · DeepSeek V4.1 Flash $0.16</td></tr>
+    </tbody>
+  </table>
+
+  <figure>
+    <svg viewBox="0 0 920 312" class="chart" role="img" aria-label="Cost per million blended tokens versus utilisation">
+<line x1="74" y1="268.0" x2="674" y2="268.0" stroke="#E6E0D2"/><text x="64" y="272.0" text-anchor="end" class="ax">$0.3</text><line x1="74" y1="233.4" x2="674" y2="233.4" stroke="#E6E0D2"/><text x="64" y="237.4" text-anchor="end" class="ax">$0.5</text><line x1="74" y1="186.4" x2="674" y2="186.4" stroke="#E6E0D2"/><text x="64" y="190.4" text-anchor="end" class="ax">$1</text><line x1="74" y1="139.4" x2="674" y2="139.4" stroke="#E6E0D2"/><text x="64" y="143.4" text-anchor="end" class="ax">$2</text><line x1="74" y1="92.5" x2="674" y2="92.5" stroke="#E6E0D2"/><text x="64" y="96.5" text-anchor="end" class="ax">$4</text><line x1="74" y1="45.5" x2="674" y2="45.5" stroke="#E6E0D2"/><text x="64" y="49.5" text-anchor="end" class="ax">$8</text><text x="200.3" y="290" text-anchor="middle" class="ax">25%</text><text x="358.2" y="290" text-anchor="middle" class="ax">50%</text><text x="516.1" y="290" text-anchor="middle" class="ax">75%</text><text x="674.0" y="290" text-anchor="middle" class="ax">100%</text>
+<line x1="74" y1="234.1" x2="674" y2="234.1" stroke="#0E6B5E" stroke-dasharray="5 4"/>
+<text x="670" y="226.1" text-anchor="end" class="val" fill="#0E6B5E">OpenRouter: $0.50 per 1M</text>
+<path d="M 74.0,18.0 L 105.6,18.0 L 137.2,18.0 L 168.7,18.0 L 200.3,31.2 L 231.9,43.5 L 263.5,54.0 L 295.1,63.0 L 326.6,71.0 L 358.2,78.1 L 389.8,84.6 L 421.4,90.5 L 452.9,95.9 L 484.5,101.0 L 516.1,105.6 L 547.7,110.0 L 579.3,114.1 L 610.8,118.0 L 642.4,121.6 L 674.0,125.1" fill="none" stroke="#B0451F" stroke-width="2.4"/>
+<path d="M 74.0,18.0 L 105.6,18.0 L 137.2,43.8 L 168.7,63.3 L 200.3,78.4 L 231.9,90.8 L 263.5,101.2 L 295.1,110.3 L 326.6,118.3 L 358.2,125.4 L 389.8,131.9 L 421.4,137.8 L 452.9,143.2 L 484.5,148.2 L 516.1,152.9 L 547.7,157.3 L 579.3,161.4 L 610.8,165.2 L 642.4,168.9 L 674.0,172.4" fill="none" stroke="#C98A16" stroke-width="2.4"/>
+<text x="231.9" y="33.5" class="val" fill="#B0451F">Fireworks H100, $8.00/hr</text>
+<text x="434.0" y="160.0" class="val" fill="#8A5E06">RunPod H100, $3.99/hr</text>
+</svg>
+    <figcaption>A 27B model on one H100. The dashed line is OpenRouter's blended price for the same model. Neither curve gets under it at any achievable utilisation: Fireworks would need ~4,500 tokens per second from one GPU, RunPod ~2,240. A single H100 realistically delivers 900–1,800.</figcaption>
+  </figure>
+
+  <h3>The number that decides it</h3>
+  <p>Invert the question. Instead of asking what a GPU costs, ask how much traffic you must push through it before the rental beats the token price:</p>
+  <table>
+    <thead><tr><th>Setup</th><th class="n">Tokens/sec needed to match OpenRouter's cheapest fp8 endpoint</th><th>Verdict</th></tr></thead>
+    <tbody>
+      <tr><td>27B on 1 × H100, Fireworks $8.00</td><td class="n">4,490</td><td><span class="chip avoid">Out of reach</span></td></tr>
+      <tr><td>27B on 1 × H100, RunPod $3.99</td><td class="n">2,239</td><td><span class="chip pilot">Borderline</span></td></tr>
+      <tr><td>70B on 2 × H100, Fireworks $16.00</td><td class="n">30,864</td><td><span class="chip avoid">Out of reach</span></td></tr>
+      <tr><td>70B on 2 × H100, RunPod $7.98</td><td class="n">15,394</td><td><span class="chip avoid">Out of reach</span></td></tr>
+      <tr><td>552B on 8 × H200, Fireworks $64.00</td><td class="n">113,241</td><td><span class="chip avoid">Impossible</span></td></tr>
+      <tr><td>552B on 8 × H200, RunPod $42.32</td><td class="n">74,875</td><td><span class="chip avoid">Impossible</span></td></tr>
+    </tbody>
+  </table>
+  <p>In monthly volume terms: one H100 at $8.00 per hour costs $5,840 a month, which buys <b>11.8 billion</b> blended tokens of a 27B model at OpenRouter's $0.495 per million. Two H100s beat the 70B token price only above <b>81 billion</b> blended tokens a month. For the 552B model the crossover is roughly 300 billion. Almost no product is there. The basis for each comparison is the cheapest <i>8-bit</i> endpoint for that model, not the cheapest 4-bit one — otherwise the comparison would flatter self-hosting.</p>
+
+  <div class="note warn">
+    <h5>What the rental price leaves out</h5>
+    <ul class="tight" style="margin-bottom:0">
+      <li><b>People.</b> A serving stack needs updates, on-call, capacity planning and security patching. A fifth of an engineer is $1,200–2,000 a month, which is a third of the GPU bill on a single H100.</li>
+      <li><b>Idle time.</b> A fixed monthly cost does not fall when traffic does. The token price does.</li>
+      <li><b>Failure.</b> One replica is zero redundancy. Production needs two, which doubles everything above.</li>
+      <li><b>Model refresh.</b> Every new checkpoint is a redeploy, a re-benchmark and a rollback plan. On a serverless endpoint it is a model name change.</li>
+    </ul>
+  </div>
+
+  <p>Why can OpenRouter's sellers undercut raw rental? Scale and batch size. A provider running thousands of GPUs at 85–95% utilisation, buying capacity on long contracts, and packing every GPU with far more concurrent sequences than a single-tenant deployment can reach, gets several times the tokens per GPU-hour that you will. DeepInfra's 70B at $0.10 / $0.32 is that arithmetic, not a mistake.</p>
+</section>
+
+<section id="s5">
+  <h2><span class="num">05</span> What to do</h2>
+  <p class="lead">One rule covers most of it: buy tokens for models you did not change, rent GPUs only for models you did — or where the data cannot leave.</p>
+
+  <table>
+    <thead><tr><th style="width:31%">Goal</th><th style="width:26%">Path</th><th class="n" style="width:18%">Cost</th><th>Why</th></tr></thead>
+    <tbody>
+      <tr><td>Ship a product on an open model</td><td>OpenRouter cheapest fp8 endpoint, or Fireworks serverless if you need residency or an SLA</td><td class="n">$0.14–0.50 per 1M blended</td><td>No fixed cost, no operations, instant model swap <span class="chip use">Use</span></td></tr>
+      <tr><td>Fine-tune a 27B for one narrow task</td><td>Fireworks Managed Training, LoRA, then a scale-to-zero deployment</td><td class="n">$108–900 once<br>+ $8.00/hr while active</td><td>Cheapest managed tuning found; serving only bills when used <span class="chip use">Use</span></td></tr>
+      <tr><td>Replace a $5.40-per-1M flagship with a tuned mid-size model</td><td>Fine-tune Qwen3.8 27B, serve on 1 × H100</td><td class="n">$1.23–2.47 per 1M blended</td><td>Two to four times cheaper than the flagship, and the model is yours <span class="chip use">Use</span></td></tr>
+      <tr><td>Serve a 70B or 27B to real users</td><td>Buy tokens; do not rent</td><td class="n">$0.14 per 1M blended</td><td>Rental needs 4,500–31,000 tokens/sec to compete <span class="chip avoid">Avoid</span></td></tr>
+      <tr><td>Self-host DeepSeek-class models to save money</td><td>Do not</td><td class="n">10–30× the serverless price</td><td>552B of weights needs eight H200s; the token price is unbeatable <span class="chip avoid">Avoid</span></td></tr>
+      <tr><td>Meet a data-residency or air-gap rule</td><td>Fireworks Sovereign or on-demand in your region</td><td class="n">$8.00/hr and up</td><td>Pay the premium knowingly; it is a compliance cost, not an efficiency play <span class="chip pilot">Pilot</span></td></tr>
+    </tbody>
+  </table>
+
+  <h3>Where to start this week</h3>
+  <ul class="tight">
+    <li><b>Take the free Muse Glimmer 30B SFT run before 30 November.</b> It costs nothing and answers the only question that matters commercially: does a tuned 30B beat the model we currently pay $3–15 per million for, on our own data?</li>
+    <li><b>Price the tuned model against the model it replaces, not against nothing.</b> A tuned 27B at $1.23–2.47 per 1M blended only wins if it replaces something at $2.50 or more, or cuts answer length enough to change the blended mix.</li>
+    <li><b>Keep a per-token route open.</b> Fireworks' price on DeepSeek V4.1 Flash ($0.30 / $1.20) is triple the cheapest mixed-provider route ($0.112 / $0.336). Route by endpoint, not by vendor loyalty.</li>
+    <li><b>Never design a product that requires a 24/7 idle GPU</b> unless the volume is already there. Scale-to-zero, batch and spot tiers exist for exactly this reason.</li>
+  </ul>
+</section>
+
+<section id="s6">
+  <h2><span class="num">06</span> Method, assumptions and what could change the answer</h2>
+
+  <div class="twocol">
+    <div>
+      <h3>Assumptions</h3>
+      <ul class="tight">
+        <li>Prices are public list rates in USD, checked 10 November 2026, excluding tax.</li>
+        <li>730 hours per month for a 24/7 deployment.</li>
+        <li>Blended cost assumes 4 prompt tokens per 1 answer token. An agentic workload runs closer to 10:1, which lifts the blended figure for every option but favors prefill-heavy providers.</li>
+        <li>Throughput figures are engineering estimates, not vendor benchmarks: 900–1,800 blended tokens/sec for a 27B on one H100, 700–1,400 for 70B on two, 2,000–4,000 for a 552B MoE on eight H200.</li>
+        <li>GPU counts follow weight size at 8-bit plus cache headroom. Fireworks may assign a different validated shape; the console's deployment-shape match is the authority for your account.</li>
+        <li>OpenRouter adds 5.5% when you buy credits ($0.80 minimum) but does not mark up inference.</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Caveats</h3>
+      <ul class="tight">
+        <li><b>One inconsistency on Fireworks' own site.</b> The pricing page lists DeepSeek V4.1 Flash at $0.30 / $1.20, while the model page shows $0.22 / $0.66. We use the pricing-page figure for Standard and report the other as a listed variant. Confirm in the console before budgeting.</li>
+        <li><b>Cheap endpoints are often quantised.</b> The $0.035-per-1M 27B is 4-bit. If accuracy matters, compare the endpoint, not the model name.</li>
+        <li><b>Spot and batch change the ranking.</b> Spot is 30% off but can drop to zero throughput; batch is 50% off but not interactive.</li>
+        <li><b>Reserved capacity is quoted privately.</b> At real volume, both Fireworks and the GPU clouds discount, and the crossover points above move.</li>
+        <li><b>This compares cost, not quality.</b> Nothing here says which model is good enough for your task — that test has to be run on your own data.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<hr>
+<footer>
+  <p class="tag">Sources, all checked 10 November 2026</p>
+  <ol>
+    <li>Fireworks AI pricing — serverless rates, training tiers, GPU rate card, Nexus plans. <a href="https://fireworks.ai/pricing">fireworks.ai/pricing</a></li>
+    <li>Fireworks documentation — models overview (serverless restriction on LoRA addons), on-demand deployments, fine-tuning introduction. <a href="https://docs.fireworks.ai/models/overview">docs.fireworks.ai/models/overview</a></li>
+    <li>Fireworks model pages — Qwen3.8 27B, Qwen3.6 27B, Llama 3.3 70B Instruct, DeepSeek V4.1 Flash (parameter counts, serverless availability, fine-tuning support). <a href="https://fireworks.ai/models">fireworks.ai/models</a></li>
+    <li>OpenRouter model and endpoint API — per-endpoint prices, quantization and context for 25–37 providers per model. <a href="https://openrouter.ai/api/v1/models">openrouter.ai/api/v1/models</a></li>
+    <li>OpenRouter FAQ — 5.5% credit fee, no markup on inference, BYOK terms. <a href="https://openrouter.ai/docs/faq">openrouter.ai/docs/faq</a></li>
+    <li>DeepSeek platform pricing — off-peak and peak rates for V4.1 Flash. <a href="https://api-docs.deepseek.com/quick_start/pricing">api-docs.deepseek.com</a></li>
+    <li>RunPod GPU pricing — H100, H200, A100 hourly rates, secure and community cloud. <a href="https://www.runpod.io/pricing">runpod.io/pricing</a></li>
+    <li>Lambda AI cloud pricing — HGX H100 and B200 instance rates. <a href="https://lambda.ai/pricing">lambda.ai/pricing</a></li>
+    <li>Together AI pricing — cross-check on Kimi K3, GLM 5.3 and DeepSeek V4.1 Flash list rates. <a href="https://www.together.ai/pricing">together.ai/pricing</a></li>
+    <li>Artificial Analysis — provider-level endpoint comparison for DeepSeek V4.1 Flash, including endpoint accuracy. <a href="https://artificialanalysis.ai/models/deepseek-v4-1-flash-1017/providers">artificialanalysis.ai</a></li>
+  </ol>
+  <p style="margin-top:22px;font-size:12px;color:#8A8F95">Prepared for internal planning. Fixed costs are modelled, not quoted; provider quotes for reserved capacity will differ from these list rates.</p>
+</footer>
+
+</div>
+</body>
+</html>
