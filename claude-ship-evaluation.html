@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Claude Ship — Evaluation for the Engineering Team</title>
+<style>
+  :root{
+    --paper:#f8f6f1;
+    --panel:#fffdf9;
+    --ink:#1a1c20;
+    --ink-soft:#4b5058;
+    --ink-faint:#7d838c;
+    --rule:#ded7c9;
+    --rule-soft:#ece7dc;
+    --oxide:#8d3f2a;
+    --oxide-soft:#f3e6e0;
+    --slate:#28414f;
+    --slate-soft:#e4ebef;
+    --green:#1f5a43;
+    --green-soft:#e2efe8;
+    --amber:#8a5a12;
+    --amber-soft:#f7ecd6;
+    --red:#8c2b2b;
+    --red-soft:#f6e2e2;
+    --grey-soft:#eceae4;
+    --mono:"Cascadia Mono","Consolas","SF Mono",ui-monospace,monospace;
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+    --sans:"Segoe UI",Inter,-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;background:var(--paper);color:var(--ink);
+    font-family:var(--sans);font-size:16px;line-height:1.62;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1300px;margin:0 auto;padding:0 28px}
+
+  /* ---------- masthead ---------- */
+  header.mast{
+    border-bottom:2px solid var(--ink);
+    background:linear-gradient(180deg,#fffdf9 0%,var(--paper) 100%);
+  }
+  .mast-top{
+    display:flex;justify-content:space-between;align-items:baseline;
+    padding:22px 0 10px;border-bottom:1px solid var(--rule);
+    font-family:var(--mono);font-size:11px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--ink-faint);
+  }
+  .mast-top b{color:var(--oxide);font-weight:600}
+  h1{
+    font-family:var(--serif);font-weight:600;font-size:clamp(30px,4.4vw,52px);
+    line-height:1.05;letter-spacing:-.015em;margin:26px 0 10px;max-width:20ch;
+  }
+  .deck{
+    font-family:var(--serif);font-size:clamp(16px,1.7vw,20px);
+    color:var(--ink-soft);max-width:68ch;margin:0 0 26px;line-height:1.5;
+  }
+  .stamp{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px 26px;padding:14px 0 26px;
+    font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;color:var(--ink-soft);
+  }
+  .stamp div span{display:block;text-transform:uppercase;font-size:9.5px;letter-spacing:.16em;color:var(--ink-faint);margin-bottom:2px}
+
+  /* ---------- verdict bar ---------- */
+  .verdict{
+    display:grid;grid-template-columns:repeat(4,1fr);gap:0;
+    border:1px solid var(--ink);background:var(--panel);margin:0 0 40px;
+  }
+  .verdict div{padding:16px 18px;border-right:1px solid var(--rule)}
+  .verdict div:last-child{border-right:0}
+  .verdict .k{font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-faint)}
+  .verdict .v{font-family:var(--serif);font-size:19px;margin-top:4px;line-height:1.25}
+
+  /* ---------- layout ---------- */
+  .cols{display:grid;grid-template-columns:210px minmax(0,1fr);gap:52px;align-items:start;padding-bottom:80px}
+  nav.toc{position:sticky;top:24px;font-size:12.5px;line-height:1.45}
+  nav.toc .lbl{font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:10px}
+  nav.toc a{display:block;padding:4px 0 4px 10px;border-left:2px solid var(--rule-soft);color:var(--ink-soft);text-decoration:none}
+  nav.toc a:hover{color:var(--oxide);border-left-color:var(--oxide)}
+  nav.toc a:visited{color:var(--ink-soft)}
+  nav.toc a.sub{padding-left:22px;font-size:11.5px;color:var(--ink-faint)}
+
+  main{min-width:0}
+  section{margin:0 0 54px;scroll-margin-top:20px}
+  h2{
+    font-family:var(--serif);font-weight:600;font-size:27px;line-height:1.2;
+    margin:0 0 6px;letter-spacing:-.01em;
+    padding-bottom:8px;border-bottom:1px solid var(--ink);
+  }
+  h2 .num{
+    font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.1em;
+    color:var(--oxide);display:block;margin-bottom:6px;
+  }
+  h3{
+    font-family:var(--sans);font-weight:650;font-size:16.5px;
+    margin:30px 0 8px;letter-spacing:-.005em;
+  }
+  h4{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-faint);margin:24px 0 6px;font-weight:600}
+  p{margin:0 0 14px;max-width:74ch}
+  ul,ol{margin:0 0 16px;padding-left:22px;max-width:74ch}
+  li{margin-bottom:7px}
+  li>span{display:inline}
+  strong{font-weight:650}
+  a{color:var(--oxide);text-decoration:none;border-bottom:1px solid rgba(141,63,42,.28)}
+  a:hover{border-bottom-color:var(--oxide)}
+  code{font-family:var(--mono);font-size:.86em;background:var(--grey-soft);padding:1.5px 5px;border-radius:2px}
+  .sr{font-family:var(--mono);font-size:10.5px;color:var(--oxide);vertical-align:super;letter-spacing:.02em}
+
+  /* ---------- chips ---------- */
+  .chip{
+    display:inline-block;font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;
+    text-transform:uppercase;padding:2.5px 7px;border-radius:2px;white-space:nowrap;
+    border:1px solid transparent;font-weight:600;vertical-align:1px;
+  }
+  .chip.v{background:var(--green-soft);color:var(--green);border-color:#c3dbc9}
+  .chip.p{background:var(--amber-soft);color:var(--amber);border-color:#e8d6b0}
+  .chip.u{background:var(--grey-soft);color:#5d6268;border-color:#dcd8cf}
+  .chip.x{background:var(--red-soft);color:var(--red);border-color:#e6c6c6}
+
+  /* ---------- tables ---------- */
+  .tw{overflow-x:auto;margin:14px 0 22px;border:1px solid var(--rule);background:var(--panel)}
+  table{border-collapse:collapse;width:100%;font-size:13.5px;line-height:1.5}
+  th{
+    text-align:left;font-family:var(--mono);font-size:10px;letter-spacing:.11em;
+    text-transform:uppercase;color:var(--ink-soft);font-weight:700;
+    padding:10px 12px;border-bottom:1px solid var(--ink);background:#efeade;white-space:nowrap;
+  }
+  td{padding:10px 12px;border-bottom:1px solid var(--rule-soft);vertical-align:top}
+  tr:last-child td{border-bottom:0}
+  tbody tr:hover{background:#fcf9f2}
+  td.num,th.num{text-align:right;font-family:var(--mono);font-size:12.5px;white-space:nowrap;font-variant-numeric:tabular-nums}
+
+  /* ---------- callouts ---------- */
+  .note{
+    border-left:3px solid var(--slate);background:var(--slate-soft);
+    padding:14px 18px;margin:18px 0 22px;font-size:14.5px;
+  }
+  .note.warn{border-left-color:var(--oxide);background:var(--oxide-soft)}
+  .note.stop{border-left-color:var(--red);background:var(--red-soft)}
+  .note .h{font-family:var(--mono);font-size:9.5px;letter-spacing:.15em;text-transform:uppercase;color:var(--ink-faint);display:block;margin-bottom:5px}
+  .note p:last-child{margin-bottom:0}
+
+  /* ---------- tldr ---------- */
+  .tldr{background:var(--ink);color:#f2efe8;padding:26px 30px;margin:0 0 40px}
+  .tldr .h{font-family:var(--mono);font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:#a9a396;display:block;margin-bottom:12px}
+  .tldr ol{margin:0;padding-left:20px;max-width:none}
+  .tldr li{margin-bottom:9px;font-size:15.5px;line-height:1.5}
+  .tldr li span{display:inline}
+  .tldr b{color:#fff}
+
+  /* ---------- pre ---------- */
+  pre{
+    font-family:var(--mono);font-size:12.5px;line-height:1.6;
+    background:#1d2024;color:#e6e2d8;padding:18px 20px;overflow-x:auto;
+    margin:14px 0 20px;border-left:3px solid var(--oxide);
+  }
+  pre .c{color:#8d968f}
+
+  /* ---------- stage strip ---------- */
+  .stages{display:grid;grid-template-columns:repeat(8,1fr);gap:6px;margin:16px 0 8px}
+  .stages div{
+    border:1px solid var(--rule);background:var(--panel);padding:9px 8px;
+    font-family:var(--mono);font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;
+    text-align:center;line-height:1.35;min-height:74px;display:flex;flex-direction:column;justify-content:space-between;
+  }
+  .stages div b{display:block;font-size:13px;color:var(--oxide);letter-spacing:0;margin-bottom:4px}
+  .stages .ai{background:var(--green-soft);border-color:#c3dbc9}
+  .stages .hy{background:var(--amber-soft);border-color:#e8d6b0}
+  .stages .hu{background:var(--grey-soft);border-color:#dcd8cf}
+  .legend{font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--ink-faint);text-transform:uppercase;margin-bottom:24px}
+  .legend i{display:inline-block;width:9px;height:9px;margin:0 5px 0 14px;border:1px solid var(--rule)}
+
+  /* ---------- flags ---------- */
+  .flags{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:14px}
+  .flags>div{border-top:3px solid var(--green);padding-top:12px}
+  .flags>div.bad{border-top-color:var(--red)}
+  .flags ul{padding-left:18px;margin:0}
+  .flags li{font-size:14px}
+
+  footer{
+    border-top:2px solid var(--ink);padding:26px 0 60px;
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;
+    color:var(--ink-faint);text-transform:uppercase;
+  }
+
+  @media(max-width:940px){
+    .cols{grid-template-columns:1fr;gap:0}
+    nav.toc{display:none}
+    .verdict{grid-template-columns:1fr 1fr}
+    .verdict div:nth-child(2){border-right:0}
+    .stages{grid-template-columns:repeat(4,1fr)}
+    .flags{grid-template-columns:1fr}
+  }
+  @media print{
+    body{background:#fff}
+    nav.toc{display:none}
+    .cols{grid-template-columns:1fr}
+    section{page-break-inside:avoid}
+    .tldr{background:#fff;color:#000;border:1px solid #000}
+    .tldr b{color:#000}
+  }
+</style>
+</head>
+<body>
+
+<header class="mast">
+  <div class="wrap">
+    <div class="mast-top">
+      <div><b>Engineering Decision Memo</b> &nbsp;/&nbsp; Internal</div>
+      <div>Checked live 24 Nov 2026 &nbsp;·&nbsp; 45 sources logged</div>
+    </div>
+    <h1>Claude Ship: what it actually does, and whether we should let it approve code</h1>
+    <p class="deck">Anthropic shipped a three-agent pull-request pipeline on 23 Nov 2026, one day before this memo. Everything below was read from the live product pages, docs, terms and community threads — not from memory or press summaries.</p>
+    <div class="stamp">
+      <div><span>Product status</span>Public beta — launched 23 Nov 2026</div>
+      <div><span>Plans</span>Team and Enterprise only</div>
+      <div><span>Host</span>GitHub (incl. Enterprise Server)</div>
+      <div><span>Pricing</span>Token usage, no list price</div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="verdict">
+    <div><div class="k">Does it exist</div><div class="v">Yes — confirmed on Anthropic's own domains</div></div>
+    <div><div class="k">The claim we were given</div><div class="v">Accurate — and it can merge with no human review</div></div>
+    <div><div class="k">Our verdict</div><div class="v">Pilot Code Review. Do not enforce Approvals yet.</div></div>
+    <div><div class="k">Five-day goal</div><div class="v">It helps, but review is not the bottleneck</div></div>
+  </div>
+
+  <div class="cols">
+    <nav class="toc">
+      <div class="lbl">Contents</div>
+      <a href="#s0">0. Metadata</a>
+      <a href="#s1">1. Executive summary</a>
+      <a href="#s2">2. What it is</a>
+      <a href="#s3">3. Why it exists</a>
+      <a href="#s4">4. Problems it solves</a>
+      <a href="#s5">5. How it works</a>
+      <a href="#s6">6. Claims check</a>
+      <a href="#s7">7. Security &amp; compliance</a>
+      <a href="#s8">8. Integration plan</a>
+      <a href="#s9">9. Alternatives</a>
+      <a href="#s10">10. Sai's questions</a>
+      <a class="sub" href="#s101">10.1 Teams subscription</a>
+      <a class="sub" href="#s102">10.2 Release process</a>
+      <a class="sub" href="#s103">10.3 Five-day cadence</a>
+      <a href="#s11">11. Benefits &amp; risks</a>
+      <a href="#s12">12. Pilot plan</a>
+      <a href="#s13">13. What users say</a>
+      <a href="#s14">14. Red / green flags</a>
+      <a href="#s15">15. Open questions</a>
+      <a href="#s16">16. Source log</a>
+    </nav>
+
+    <main>
+
+<div class="tldr">
+  <span class="h">The short version</span>
+  <ol>
+    <li><span><b>It is real and it is new.</b> Claude Ship launched 23 November 2026. Three agents: Code Review (general availability), PR Steward and Claude Approvals (both beta).</span></li>
+    <li><span><b>The description we were given is accurate but incomplete.</b> The agents review, fix and approve — and the fixer is deliberately barred from approving.</span></li>
+    <li><span><b>The real risk is not bad reviews, it is silent merges.</b> Anthropic's own docs list the ways a pull request can merge with nobody but its author — or a bot — having looked at it.</span></li>
+    <li><span><b>Pricing is a blank cheque by design.</b> Token-billed, no published per-review price, and observe mode is billed too.</span></li>
+    <li><span><b>Recommendation:</b> two-week pilot, Code Review only, spend cap set first, Approvals in observe mode, no branch-protection changes. Decide after the numbers exist.</span></li>
+  </ol>
+</div>
+
+<!-- ============================ 0 ============================ -->
+<section id="s0">
+  <h2><span class="num">Section 0</span>Metadata</h2>
+  <div class="tw">
+    <table>
+      <tbody>
+        <tr><th style="width:190px">Date of research</th><td>24 November 2026, India Standard Time. Product launched 23 November 2026 <span class="sr">[S1]</span>.</td></tr>
+        <tr><th>Method</th><td>Every page opened in a live browser session. Text read directly from the rendered page, not from search snippets or AI summaries. Pricing and availability re-checked on the same day.</td></tr>
+        <tr><th>Sources opened</th><td>45 logged: 27 primary (Anthropic product, docs, pricing, trust centre, support, GitHub; plus each competitor's own pricing and docs), 15 independent (press, DORA, academic benchmarks, OWASP), 3 community threads (Hacker News, two subreddits). Full log in Section 16.</td></tr>
+        <tr><th>Product status</th><td><span class="chip p">Public beta</span> Code Review is generally available; PR Steward and Claude Approvals are in public beta <span class="sr">[S1][S3]</span>.</td></tr>
+        <tr><th>Availability limits</th><td>Team and Enterprise organisations, GitHub repositories only. Not available under Zero Data Retention, HIPAA configuration, or customer-managed encryption keys <span class="sr">[S1][S3]</span>.</td></tr>
+        <tr><th>Confidence</th><td><b>High</b> on what the product does and how it is configured (multiple official pages agree). <b>Low</b> on cost per pull request and on quality in our codebase — Anthropic publishes no per-review price and no independent benchmark exists yet, because the product is one day old.</td></tr>
+        <tr><th>What could not be verified</th><td>[UNVERIFIED] Dollar cost per review; whether a Team plan can buy the usage credits Ship draws on; false-positive and miss rates; any independent measurement of the internal "2x merged PRs" figure; which models the agents run.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="note warn">
+    <span class="h">Read the dates</span>
+    <p>This product is roughly 24 hours old at the time of writing. There are no independent benchmarks, no third-party security audits of these specific agents, and almost no production experience outside Anthropic. Every performance number in this memo is either Anthropic's own or anecdotal.</p>
+  </div>
+</section>
+
+<!-- ============================ 1 ============================ -->
+<section id="s1">
+  <h2><span class="num">Section 1</span>Executive summary</h2>
+  <p><b>What it is.</b> A suite of three agents that sit on GitHub pull requests: Code Review finds bugs, PR Steward pushes fixes for failing checks and review comments, Claude Approvals reads a policy file in the repo and decides whether the change has enough approvals <span class="sr">[S1][S3]</span>.</p>
+  <p><b>Who can use it.</b> Team and Enterprise plans, GitHub only, not under ZDR, HIPAA or CMEK <span class="sr">[S1]</span>. Billing is by token against organisation usage credits, with admin spend caps, and no published price per review <span class="sr">[S11]</span>.</p>
+  <p><b>Verdict.</b> The engineering is coherent and the guard rails are real — the fixer cannot approve, and GitHub branch rules still decide what merges. But Anthropic's own documentation lists several configurations in which a pull request merges with no human review beyond the author, including seats of zero and bot-authored changes <span class="sr">[S9]</span>. That is the risk to manage, not the review quality.</p>
+  <p><b>Recommendation.</b> Run a two-week, single-repository pilot of Code Review with a hard spend cap. Add PR Steward in manual mode in week two. Put an Approvals policy in observe mode and compare its decisions against your reviewers — but do not make it a required check, and do not loosen branch protection, until you have four weeks of agreement data.</p>
+  <p><b>On the five-day release goal.</b> Review latency is roughly a third of a typical pull request's lead time in our model. Removing most of it helps, but QA, staging and release approval remain, and none of them are touched by this product. Section 10.3 has the arithmetic.</p>
+</section>
+
+<!-- ============================ 2 ============================ -->
+<section id="s2">
+  <h2><span class="num">Section 2</span>What it is</h2>
+  <p>Claude Ship is not one product but a bundle of three agents plus a command, sold under Anthropic's Claude Code line. The official definition, from the launch post: it "can review PRs, fix them, and decide what's ready to merge based on policies each team sets" <span class="sr">[S1]</span>.</p>
+
+  <h3>The three components</h3>
+  <div class="tw">
+    <table>
+      <thead><tr><th style="width:150px">Agent</th><th style="width:110px">Status</th><th>What it does</th><th style="width:150px">Can it approve?</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><b>Code Review</b></td>
+          <td><span class="chip v">GA</span></td>
+          <td>Several agents read the diff and surrounding code in parallel, a verification step filters false positives, findings are ranked and posted as inline comments plus a check run. Three depth levels: Quick, Standard, Deep <span class="sr">[S4]</span>.</td>
+          <td>No. "By itself, a review doesn't approve or block the pull request" <span class="sr">[S4]</span>.</td>
+        </tr>
+        <tr>
+          <td><b>PR Steward</b></td>
+          <td><span class="chip p">Beta</span></td>
+          <td>Watches an open PR; pushes commits for failing CI, merge conflicts and review feedback; comments after every push with what changed and how to undo it. Steering by <code>@claude</code>, stop with <code>@claude stop</code> <span class="sr">[S1][S5]</span>.</td>
+          <td>No, by design. "Steward is designed not to approve or merge pull requests" <span class="sr">[S5]</span>.</td>
+        </tr>
+        <tr>
+          <td><b>Claude Approvals</b></td>
+          <td><span class="chip p">Beta</span></td>
+          <td>A GitHub check that reads <code>.claude/approvals.yml</code>, works out which rules apply, counts approvals, and reports what is still needed — or posts an approving review where the policy permits <span class="sr">[S7]</span>.</td>
+          <td>Yes — this is the only component that can.</td>
+        </tr>
+        <tr>
+          <td><b><code>/ship</code> and <code>/steward</code></b></td>
+          <td><span class="chip v">Rolling out</span></td>
+          <td>Local Claude Code commands: commit, push, open the PR, run a review, then watch the PR and fix feedback. <code>/steward</code> skips the review step. Runs in your terminal session; cloud sessions do not have them <span class="sr">[S13]</span>.</td>
+          <td>No. In the <code>/ship</code> flow the docs say plainly: "once the pull request is ready, merge it yourself" <span class="sr">[S13]</span>.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Who makes it, and which models</h3>
+  <p>Anthropic. Distribution is a hosted GitHub App (developer: <code>anthropics</code>, app ID 1236702) rather than an open-source action in your repo: reviews "run on Anthropic infrastructure, so you don't add workflow files to your repositories" <span class="sr">[S6][S12][S18]</span>. There is no public repository for Ship in Anthropic's GitHub organisation — a search returns zero results — which is consistent with a hosted service rather than a shipped codebase.</p>
+  <p>Which model runs the agents is <em>not</em> disclosed — [UNVERIFIED]. The docs state the opposite of what a buyer might assume: "Code Review chooses the Claude models that reviews run on, and its admin settings don't offer a model choice" <span class="sr">[S4]</span>. You tune thoroughness by review level, not by model.</p>
+
+  <h3>Release status, date, pricing model</h3>
+  <ul>
+    <li><b>Launched</b> 23 November 2026. Code Review existed earlier as a standalone product and is now folded in as the GA component <span class="sr">[S1]</span>.</li>
+    <li><b>Plans</b> Team and Enterprise. The public pricing page lists neither Ship nor its agents as a feature of any seat tier — it appears only as a footer link — so entitlement is set by the docs, not the price sheet <span class="sr">[S17]</span>.</li>
+    <li><b>Pricing model</b> Pure token consumption against organisation usage credits, "separately from your plan's included usage". No flat per-review price exists <span class="sr">[S11]</span>.</li>
+    <li><b>Promotion</b> Enterprise organisations can claim $10,000–$50,000 of credits, sized by active Claude Code seats, claimable 15 Oct 2026 – 15 Jan 2027, lasting 30 days from the claim <span class="sr">[S16]</span>. Team plans are explicitly excluded from this offer <span class="sr">[S16]</span>.</li>
+  </ul>
+</section>
+
+<!-- ============================ 3 ============================ -->
+<section id="s3">
+  <h2><span class="num">Section 3</span>Why it exists</h2>
+  <p>Anthropic states the motivation in the first person, and it is unusually candid about the trigger: on its own Claude Code team, "Claude writes most of our code, and we wanted everything after the PR to move that fast too" <span class="sr">[S1]</span>.</p>
+  <p>The stated target user is not the individual developer but the organisation: teams "stay in control of where it runs and which changes need a person", with the goal of shipping "code as fast as teams write it" <span class="sr">[S1]</span>. Secondary audiences are named explicitly — a product manager on the Claude Code team can now open a PR and let the pipeline finish it <span class="sr">[S1]</span>.</p>
+
+  <h3>The market context it is answering</h3>
+  <ul>
+    <li><b>The review bottleneck is real and self-inflicted at AI-native shops.</b> Anthropic's own description of the old loop — open PR, start next task, get pulled back, push a fix, wait again, then go find a human approver — is the standard complaint <span class="sr">[S1]</span>.</li>
+    <li><b>Review capacity has not scaled with code volume.</b> The same page concedes the original design assumption: "Most teams want a person to approve every change, and that's easy to keep up with when people write every line" — which stops being true when agents write the lines <span class="sr">[S1]</span>.</li>
+    <li><b>Competitors are converging on the same seam.</b> GitHub Copilot code review, CodeRabbit, Greptile, Graphite and Qodo all sell review automation; the differentiator Ship adds is the approval decision, not the review <span class="sr">[S27–S33]</span>.</li>
+  </ul>
+  <div class="note">
+    <span class="h">Honest framing</span>
+    <p>Ship exists to protect a specific business position: if agents write the code, the review-and-merge layer is where the remaining human time and the remaining vendor leverage sit. Anthropic is selling the closing of its own loop.</p>
+  </div>
+</section>
+
+<!-- ============================ 4 ============================ -->
+<section id="s4">
+  <h2><span class="num">Section 4</span>Problems it solves</h2>
+  <div class="tw">
+    <table>
+      <thead><tr><th style="width:150px">Problem claimed</th><th style="width:220px">Claimed solution</th><th>Evidence offered</th><th style="width:96px">Status</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Review latency</td>
+          <td>Automated multi-agent review on PR open</td>
+          <td>None quantitative. An internal claim only: merged PRs on the Claude Code team "more than doubled from June to September while the share reverted fell by more than 40%" <span class="sr">[S1]</span>. Self-reported, one team, no baseline published.</td>
+          <td><span class="chip p">Partial</span></td>
+        </tr>
+        <tr>
+          <td>Inconsistent review standards</td>
+          <td>A review-level setting and guidance files so flagging is tunable per repo</td>
+          <td>Documented mechanics: by default it targets correctness, "not formatting preferences or missing test coverage", and behaviour can be changed with guidance files <span class="sr">[S4]</span>. No published consistency measurement.</td>
+          <td><span class="chip p">Partial</span></td>
+        </tr>
+        <tr>
+          <td>Fix toil after review</td>
+          <td>PR Steward pushes commits for failing checks, conflicts and comments</td>
+          <td>Two customer quotes on the launch page, both unnamed-company executives praising it, neither with numbers <span class="sr">[S1]</span>.</td>
+          <td><span class="chip p">Partial</span></td>
+        </tr>
+        <tr>
+          <td>Approval delay</td>
+          <td>Policy-driven approval by Claude instead of waiting for a person</td>
+          <td>Mechanism is documented and verifiable <span class="sr">[S7][S8]</span>. Whether it is <em>safe</em> is not evidenced at all — no published defect or revert rate for auto-approved PRs.</td>
+          <td><span class="chip u">Unproven</span></td>
+        </tr>
+        <tr>
+          <td>Feedback volume overwhelming reviewers</td>
+          <td>Verification step filters candidate findings before posting</td>
+          <td>Described in docs as a four-stage pipeline (find, verify, rank, post) <span class="sr">[S4]</span>. No published false-positive rate. One practitioner on r/ClaudeAI calls the integrated review "mid at best" for critical findings <span class="sr">[S21]</span>.</td>
+          <td><span class="chip u">Unproven</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Note what is missing: there is no benchmark page, no customer case study with before/after cycle time, and no third-party evaluation. For a product whose entire pitch is speed, that is the weakest part of the launch.</p>
+
+  <h3>What independent research says about AI review in general</h3>
+  <p>No study has evaluated Claude Ship — it is a day old. But the wider evidence on AI code review is consistent enough to shape expectations <span class="sr">[S41][S42]</span>:</p>
+  <ul>
+    <li><b>Detection is the weak axis, not comment volume.</b> SWR-Bench, built from 1,000 manually verified PRs with full project context, finds mainstream review systems underperform, with <em>low precision</em> — a high false-positive rate — named as the cause <span class="sr">[S41]</span>. A separate benchmark of 584 real PRs with known defects reports that even the strongest systems detect roughly one third of known defects <span class="sr">[S42]</span>.</li>
+    <li><b>Usefulness and detection are different things.</b> CR-Bench-v2 found systems with near-identical detection rates separated by 17 points of comment usefulness <span class="sr">[S42]</span> — which is exactly the difference a team feels as "noise" versus "signal".</li>
+    <li><b>Aggregation helps.</b> The same SWR-Bench work reports that combining multiple reviews lifts F1 by up to 43.67% <span class="sr">[S41]</span>. That is an argument for Ship's multi-agent review <em>and</em> for the community's cross-vendor suggestion.</li>
+    <li><b>Both benchmarks are preprints, one is vendor-authored.</b> Treat the direction as reliable and the exact numbers as indicative.</li>
+  </ul>
+  <p>The practical implication: expect a triage burden. Budget reviewer time to read and dismiss AI findings, and measure the false-positive rate in the pilot rather than assuming Anthropic's verification stage solved it.</p>
+</section>
+
+<!-- ============================ 5 ============================ -->
+<section id="s5">
+  <h2><span class="num">Section 5</span>How it works</h2>
+
+  <h3>Trigger and flow</h3>
+  <p>No webhook code or Actions YAML to maintain. The admin connects a GitHub organisation, installs the Claude GitHub App, and adds repositories one at a time in <code>Organization settings &gt; Claude Ship</code> <span class="sr">[S12]</span>. Each repository then gets independent settings:</p>
+  <div class="tw">
+    <table>
+      <thead><tr><th style="width:170px">Setting</th><th>Options</th><th style="width:180px">Cost effect</th></tr></thead>
+      <tbody>
+        <tr><td>Review level</td><td>Quick / Standard (default) / Deep — set org-wide, overridable per repo <span class="sr">[S4]</span></td><td>Stated to scale with depth <span class="sr">[S11]</span></td></tr>
+        <tr><td>Review runs</td><td>Once after PR creation / After every push / Manual (<code>@claude review</code>) <span class="sr">[S11]</span></td><td>Every-push mode multiplies cost by push count</td></tr>
+        <tr><td>PR Steward start</td><td>On PR open, or Manual (<code>@claude steward</code>) <span class="sr">[S3]</span></td><td>No spend limit until one is set</td></tr>
+        <tr><td>Monthly spend limit</td><td>Per service, at <code>Organization settings &gt; Usage</code> <span class="sr">[S11]</span></td><td>Reviews skip when the limit is hit</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>How team policy is written and stored</h3>
+  <p>Policy is a YAML file committed to the repository — <code>.claude/approvals.yml</code> — and read from the default branch. This is the most interesting design decision in the product: the approval policy is versioned code, reviewable like code, and it can be nested per directory <span class="sr">[S8]</span>.</p>
+  <p>The starter policy Anthropic ships in its setup docs (verbatim, abbreviated):</p>
+  <pre><span class="c"># .claude/approvals.yml</span>
+version: 1
+mode: observe
+rules:
+  - purpose: "A change takes two people. When Claude's review passes, one is enough and Claude approves."
+    paths: ["**"]
+    verdict: { claude: comments, seats: 2 }
+    override:
+      - { if: "claude/code_review = pass", verdict: { claude: approves, seats: 1 } }
+  - purpose: "A change to the review rules takes two people."
+    paths: ["**/.claude/**"]
+    nested: inherit
+    verdict: { claude: comments, seats: 2 }</pre>
+  <p>Mechanics that matter operationally <span class="sr">[S8]</span>:</p>
+  <ul>
+    <li><b>Rules combine by strictest wins.</b> Where two rules cover a file, the harsher verdict applies. This is the right default — but it means a broad rule can silently over-ride an intent expressed in a narrower one.</li>
+    <li><b>Nearest policy file decides.</b> A subdirectory policy can ask for <em>less</em> than the root; above it, only rules marked <code>nested: inherit</code> still apply. Decentralised teams can therefore weaken the central policy.</li>
+    <li><b>Editing the policy is self-service.</b> "Anyone who can merge a policy file into the default branch can turn Approvals on" <span class="sr">[S7]</span>. The only brake is that an Owner can turn Approvals off org-wide, and then a merged policy file does not re-enable it.</li>
+    <li><b>Mid-flight edits do not apply.</b> While a policy change sits in an open PR, the rules on the default branch decide <span class="sr">[S8]</span>.</li>
+  </ul>
+
+  <h3>What the agents can read</h3>
+  <p>PR Steward runs in a cloud session with the pull request's own repository mounted read-write. By default it can also fetch public repositories and read GitHub search results from other repositories your organisation has added <span class="sr">[S6]</span>. Permissions requested, verbatim from the docs: read and write on <i>contents</i>, <i>pull requests</i> and <i>issues</i>; read on <i>checks</i> and <i>statuses</i> and write on <i>Actions</i>, where granted — and on github.com the installation can be granted write on <i>workflows</i>, "which lets PR Steward push changes to workflow files" <span class="sr">[S6]</span>.</p>
+  <div class="note warn">
+    <span class="h">Permission to think about</span>
+    <p>Write on workflows means an agent that responds to PR comments can, in principle, alter CI configuration. That is a code-execution path, not just a code-editing path. Grant it only if you have decided you want it.</p>
+  </div>
+  <p>The docs are silent on context-window limits, monorepo behaviour and large-PR truncation — there is no statement about what happens when a diff exceeds the model's window. Treat that as an open question for the pilot, not a documented capability.</p>
+
+  <h3>What "approve" means, and the guard rails</h3>
+  <p>This is where a careful reading changes the buying decision. Claude's approving review is a real GitHub review and <em>can</em> satisfy a branch rule: "where a GitHub branch rule requires one approval, Claude's approving review can be that approval" <span class="sr">[S7]</span>. The Approvals check itself only blocks a merge "where you make it a required check in GitHub" <span class="sr">[S9]</span>. In observe mode it does not block at all.</p>
+  <p>Anthropic publishes an explicit list of paths to a merge with no human beyond the author <span class="sr">[S9]</span>:</p>
+  <ul>
+    <li><code>seats: 0</code> — a bot-authored PR can merge with nobody looking.</li>
+    <li><code>seats: 1</code> — the author fills the seat, so nobody else has to look.</li>
+    <li>A <code>from</code> list that admits bots, or a machine user counting as a person.</li>
+    <li>Files no rule covers — GitHub counts the neutral check result as passing.</li>
+    <li>A condition that reads a classifier's answer, which "is one that a pull request's text can steer" <span class="sr">[S9]</span>.</li>
+    <li>Auto-merge or a merge queue, where nothing requires a person to act.</li>
+  </ul>
+  <p>Guard rails that do exist: branch protection and required checks are unchanged and still decide <span class="sr">[S1]</span>; PR Steward cannot approve or merge <span class="sr">[S5]</span>; a rule with <code>claude: approves</code> starts no Code Review unless you also name <code>claude/code_review</code>, so "Claude can approve a change that nothing has reviewed" unless you say otherwise <span class="sr">[S7]</span>; observe mode reports without enforcing; and everything the agents do is visible as commits and comments on the PR.</p>
+
+  <h3>Known limits and failure modes</h3>
+  <ul>
+    <li><b>It skips more than you would guess.</b> PR Steward skips drafts, PRs from forks, PRs opened by bots, and authors without write access <span class="sr">[S5]</span>. Open-source contribution flows are therefore outside its reach.</li>
+    <li><b>Adds a file can silently switch reviews off.</b> Once a policy file covers every changed file, automatic Code Reviews normally stop unless a rule names <code>claude/code_review</code> — in observe mode too. The docs warn about this because it is easy to do by accident <span class="sr">[S7]</span>.</li>
+    <li><b>Explicit accuracy caveat.</b> "Code Review uses AI to review code and may miss bugs, security vulnerabilities, or other issues. A review with no findings doesn't mean your code is error-free or secure" <span class="sr">[S4]</span>.</li>
+    <li><b>No CI awareness in policy conditions.</b> A policy condition "can't read CI results, so keep CI as its own required check in GitHub" <span class="sr">[S7]</span>.</li>
+    <li><b>Language and framework coverage is undocumented.</b> Nothing states supported languages or CI systems — reviews are model-based, so support is implicit, not contractual.</li>
+  </ul>
+</section>
+
+<!-- ============================ 6 ============================ -->
+<section id="s6">
+  <h2><span class="num">Section 6</span>Claims check</h2>
+  <div class="tw">
+    <table>
+      <thead><tr><th>Claim</th><th style="width:110px">Source</th><th>What the evidence shows</th><th style="width:110px">Status</th></tr></thead>
+      <tbody>
+        <tr><td>"Suites of agents that review PRs"</td><td>Anthropic <span class="sr">[S1][S4]</span></td><td>Multiple agents per review, four-stage pipeline, inline findings plus a check run. Corroborated by three independent outlets <span class="sr">[S22–S26]</span>.</td><td><span class="chip v">Verified</span></td></tr>
+        <tr><td>"Fix them"</td><td>Anthropic <span class="sr">[S5]</span></td><td>PR Steward pushes commits for failing checks, conflicts and feedback. Scoped: skips forks, drafts, bots, read-only authors.</td><td><span class="chip v">Verified</span></td></tr>
+        <tr><td>"Approve based on team-defined policies"</td><td>Anthropic <span class="sr">[S7][S8]</span></td><td>Policy is a YAML file; Claude can post an approving review. Requires the file to be merged and, for enforcement, the check to be required.</td><td><span class="chip v">Verified</span></td></tr>
+        <tr><td>"Takes a PR from review to approval without a person"</td><td>Press <span class="sr">[S22]</span></td><td>True only where policy allows and branch rules permit. Anthropic's own docs frame it as configurable, not default.</td><td><span class="chip p">Partly — context omitted</span></td></tr>
+        <tr><td>Merged PRs "more than doubled"; reversions "fell by more than 40%"</td><td>Anthropic <span class="sr">[S1]</span></td><td>Single internal team, June–September, no control group, no absolute numbers, not independently examined. Multiple other factors (model upgrades, team size) could explain it.</td><td><span class="chip u">Self-reported</span></td></tr>
+        <tr><td>"Works with existing branch protection and required checks"</td><td>Anthropic <span class="sr">[S1][S9]</span></td><td>Confirmed: GitHub rules still decide what merges; the check blocks only when made required.</td><td><span class="chip v">Verified</span></td></tr>
+        <tr><td>PR Steward "can't approve or merge"</td><td>Anthropic <span class="sr">[S5]</span></td><td>Stated in docs as a design constraint, not just a configuration default.</td><td><span class="chip v">Verified</span></td></tr>
+        <tr><td>"Available on Team and Enterprise"</td><td>Anthropic <span class="sr">[S1][S3][S17]</span></td><td>Docs and product page agree. The public pricing page does not list Ship under any seat tier, so the commercial terms live in the docs and the admin console, not the price sheet.</td><td><span class="chip p">Verified, pricing page silent</span></td></tr>
+        <tr><td>Usage-based pricing with spend limits</td><td>Anthropic <span class="sr">[S11][S16]</span></td><td>Token billing against usage credits, org-level caps, reviews skip at the cap. No list price per review is published anywhere.</td><td><span class="chip v">Verified</span></td></tr>
+        <tr><td>Not available under ZDR / HIPAA / CMEK</td><td>Anthropic <span class="sr">[S1][S3][S10]</span></td><td>Stated consistently on the launch page, product page and three docs pages.</td><td><span class="chip v">Verified</span></td></tr>
+        <tr><td>Enterprise credit offer of $10,000+</td><td>Anthropic support <span class="sr">[S16]</span></td><td>Actual range $10,000–$50,000 by active Claude Code seats; Team plans and reseller-billed orgs excluded; claim window ends 15 Jan 2027.</td><td><span class="chip v">Verified</span></td></tr>
+        <tr><td>Implication that <code>/ship</code> gets code merged automatically</td><td>Press framing <span class="sr">[S23][S24]</span></td><td>Contradicted by the docs for <code>/ship</code>: "once the pull request is ready, merge it yourself" <span class="sr">[S13]</span>. Approval automation comes from the separate server-side agent.</td><td><span class="chip x">Misleading</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ============================ 7 ============================ -->
+<section id="s7">
+  <h2><span class="num">Section 7</span>Security, privacy, and compliance</h2>
+  <p>Short version: the commercial data terms are strong, the compliance surface has three hard exclusions, and the security-relevant design risk is prompt injection through PR text with workflow-write permissions in reach.</p>
+
+  <h3>Data handling and training</h3>
+  <p>Read this quote carefully, because it is the single most useful sentence for procurement: commercial users "maintain existing policies: Anthropic does not train generative models using code or prompts sent to Claude Code under commercial terms, unless the customer has chosen to provide their data to us for model improvement" <span class="sr">[S14]</span>. Team and Enterprise are commercial plans, so code is not used for training by default. Opting into the Development Partner Program is an explicit admin action, and it is not available on Bedrock or Google Cloud <span class="sr">[S14]</span>.</p>
+
+  <h3>Where code runs and what is retained</h3>
+  <ul>
+    <li>Reviews run on Anthropic infrastructure; no workflow files are added to your repo <span class="sr">[S12]</span>.</li>
+    <li>PR Steward works in a cloud session: the repository is cloned into "the session's isolated VM", the session transcript is stored so the session can be resumed, and "code and session data are subject to the retention and usage policies for your account type" <span class="sr">[S14]</span>.</li>
+    <li>GitHub credentials are "stored encrypted on Anthropic's servers and never enter the VM"; GitHub traffic from the VM goes through an Anthropic proxy that attaches them server-side; all outbound traffic passes a security proxy for audit logging <span class="sr">[S14]</span>.</li>
+    <li>Encryption at rest on the Anthropic API is infrastructure-level AES-256 with Zero Data Retention available as an option — but ZDR is precisely the configuration Ship refuses to run under <span class="sr">[S14][S1]</span>.</li>
+    <li>Local storage: Claude Code keeps session transcripts in plaintext under <code>~/.claude/projects/</code> for 30 days by default <span class="sr">[S14]</span>.</li>
+  </ul>
+
+  <h3>Compliance posture</h3>
+  <div class="tw">
+    <table>
+      <thead><tr><th>Scope</th><th>SOC 2 Type 2</th><th>ISO 27001</th><th>ISO 42001</th><th>CSA Star</th><th>HIPAA</th></tr></thead>
+      <tbody>
+        <tr><td>Claude Team</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Not applicable</td></tr>
+        <tr><td>Claude Enterprise</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Source: Anthropic Trust Center compliance matrix, read 24 Nov 2026 <span class="sr">[S15]</span>. Note the trap: Enterprise carries a HIPAA-ready offering, but Ship is explicitly not covered by the BAA and is unavailable under the HIPAA configuration <span class="sr">[S4]</span>. Compliance certification of the platform does not extend to this product.</p>
+
+  <h3>Prompt-injection risk</h3>
+  <p>The product takes instructions from PR content by design — <code>@claude</code> comments steer PR Steward, and policy conditions can read a classifier whose answer "a pull request's text can steer" <span class="sr">[S6][S9]</span>. This is textbook indirect prompt injection: OWASP defines it as the model accepting input from external sources such as files, and notes that "it is unclear if there are fool-proof methods of prevention" <span class="sr">[S43]</span>. Anthropic's mitigation is structural rather than perfect: the fixer cannot approve, findings are verified against code before posting, and every push is followed by a comment explaining what changed and how to undo it. The residual risk is a PR written to talk an agent into a workflow-file change or a classifier verdict. That is mitigated by keeping the check required, not by trusting the agent.</p>
+
+  <h3>Enterprise controls that apply</h3>
+  <ul>
+    <li>Owner-gated enablement per repository, org-wide off-switch, and per-service spend limits <span class="sr">[S7][S11]</span>.</li>
+    <li>SSO on Team and Enterprise; SCIM, audit logs, custom retention controls and the Compliance API on Enterprise <span class="sr">[S17]</span>.</li>
+    <li>GitHub Enterprise Server and GitHub Enterprise Cloud with data residency are supported; GHES needs the enterprise hostname entered during setup <span class="sr">[S4][S12]</span>.</li>
+  </ul>
+</section>
+
+<!-- ============================ 8 ============================ -->
+<section id="s8">
+  <h2><span class="num">Section 8</span>Integration plan for our architecture</h2>
+  <div class="note">
+    <span class="h">Fill these in before step 3</span>
+    <p>The brief left stack, CI/CD and branching model blank. The plan below is written to work regardless, but four answers change the sequence: (1) which languages and frameworks, (2) which CI system, (3) branching model and release train, (4) existing CODEOWNERS and required checks. Without them, treat the ordering as a checklist rather than a schedule.</p>
+  </div>
+
+  <h3>Step-by-step path</h3>
+  <ol>
+    <li><b>Confirm entitlement.</b> Verify the organisation is on Team or Enterprise, and is not under ZDR, HIPAA or CMEK — any of these ends the evaluation here <span class="sr">[S1]</span>.</li>
+    <li><b>Name three owners.</b> A Claude organisation Owner, a GitHub organisation Owner to install the app, and a repository admin for branch rules <span class="sr">[S12]</span>. Without all three, setup stalls halfway.</li>
+    <li><b>Set the spend cap before anything else.</b> <code>Organization settings &gt; Usage &gt; Claude Code Review &gt; Edit spend limit</code> <span class="sr">[S11]</span>. Do this first; the default review mode is "after every push", which is the most expensive setting.</li>
+    <li><b>Pilot one repository.</b> Choose one with high PR volume, a real test suite, and low blast radius. Set Review runs to "once after PR creation" for the pilot <span class="sr">[S11]</span>.</li>
+    <li><b>Leave PR Steward off in week one.</b> Then enable it in Manual mode, where a developer types <code>@claude steward</code> <span class="sr">[S3]</span>.</li>
+    <li><b>Write an Approvals policy in observe mode only.</b> Merge <code>.claude/approvals.yml</code> with <code>mode: observe</code>, and — critically — include <code>claude/code_review</code> in a rule, otherwise automatic reviews stop once the file covers your files <span class="sr">[S7]</span>.</li>
+    <li><b>Do not touch branch protection.</b> Keep every existing required check and required review. The pilot measures agreement, not enforcement <span class="sr">[S9]</span>.</li>
+    <li><b>Compare, then decide.</b> After two weeks, compare observe-mode verdicts against what humans actually decided. Enforce only if agreement is high and the disagreements are all in the safe direction.</li>
+  </ol>
+
+  <h3>Where it sits relative to CI and human review</h3>
+  <div class="stages">
+    <div class="hu"><b>1</b>Coding</div>
+    <div class="hu"><b>2</b>PR opened</div>
+    <div class="ai"><b>3</b>AI review</div>
+    <div class="ai"><b>4</b>AI fixes</div>
+    <div class="hy"><b>5</b>Human review</div>
+    <div class="hu"><b>6</b>CI required</div>
+    <div class="hy"><b>7</b>Approval</div>
+    <div class="hu"><b>8</b>Merge</div>
+  </div>
+  <div class="legend"><i style="background:var(--green-soft)"></i>Automated by Ship<i style="background:var(--amber-soft)"></i>Shared, policy-dependent<i style="background:var(--grey-soft)"></i>Unchanged</div>
+  <p>CI stays where it is. Policy conditions cannot read CI results, so CI must remain its own required check <span class="sr">[S7]</span>. Human review does not disappear — it moves from "every PR" to "the PRs your policy names".</p>
+
+  <h3>Permissions to grant</h3>
+  <div class="tw">
+    <table>
+      <thead><tr><th style="width:190px">Permission</th><th style="width:90px">Level</th><th>Why</th><th style="width:110px">Recommendation</th></tr></thead>
+      <tbody>
+        <tr><td>Contents</td><td>Read/write</td><td>Push fixes and read code <span class="sr">[S6]</span></td><td>Grant</td></tr>
+        <tr><td>Pull requests</td><td>Read/write</td><td>Comment, review, approve where policy allows</td><td>Grant</td></tr>
+        <tr><td>Issues</td><td>Read/write</td><td>Comment threading</td><td>Grant</td></tr>
+        <tr><td>Checks / statuses</td><td>Read</td><td>See failing checks to fix them</td><td>Grant</td></tr>
+        <tr><td>Actions</td><td>Write</td><td>Re-run or adjust workflows</td><td>Grant only if needed</td></tr>
+        <tr><td>Workflows</td><td>Write</td><td>Lets the agent edit workflow files <span class="sr">[S6]</span></td><td>Withhold until proven</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Rollout and the risks specific to us</h3>
+  <ul>
+    <li><b>Pilot repository</b> (weeks 1–2): Code Review once-per-PR, cap set, measurement only.</li>
+    <li><b>Shadow mode</b> (weeks 3–4): Approvals in observe mode across two or three repos; compare verdicts against human decisions.</li>
+    <li><b>Enforced</b> (only after a clean comparison): make the check required <em>in addition to</em> existing rules, never instead of them.</li>
+    <li><b>Risks:</b> token spend surprises from "after every push"; accidental loss of automatic reviews when a policy file lands; agent write access to workflow files; and — the one that keeps compliance awake — an auto-approved change that is later reverted with no human in the audit trail.</li>
+  </ul>
+</section>
+
+<!-- ============================ 9 ============================ -->
+<section id="s9">
+  <h2><span class="num">Section 9</span>Alternatives compared</h2>
+  <p>Seven real alternatives, each checked on its own site on 24 November 2026. The important finding is not the feature grid: <b>six of the seven can now approve a pull request</b>, which contradicts the common assumption that only Anthropic does. The differentiator is that Ship is the only one where the approval decision is the product, expressed as a policy file.</p>
+  <div class="tw">
+    <table>
+      <thead><tr><th style="width:132px">Product</th><th style="width:118px">Auto-fix (commits)</th><th style="width:238px">Auto-approve / merge</th><th style="width:186px">Price (24 Nov 2026)</th><th>Policy mechanism and fit</th></tr></thead>
+      <tbody>
+        <tr style="background:#f7f2ea">
+          <td><b>Claude Ship</b> <span class="chip p">Baseline</span></td>
+          <td>Yes — PR Steward pushes</td>
+          <td>Approves by policy; fixer cannot approve; merges only where rules allow</td>
+          <td>Token-billed, no list price</td>
+          <td><b>Policy:</b> <code>.claude/approvals.yml</code>, nested, strictest-wins &nbsp;<b>Fit:</b> Team/Enterprise only; GitHub only; excluded under ZDR/HIPAA/CMEK</td>
+        </tr>
+        <tr>
+          <td><b>GitHub Copilot code review</b></td>
+          <td>Yes — "Fix with Copilot", new PR or commit to branch</td>
+          <td><b>Approves: opt-in, off by default.</b> Two toggles, up to 15 file globs; enterprise default is "Disabled everywhere". No auto-merge <span class="sr">[S28]</span></td>
+          <td>Business $19/seat, Enterprise $39/seat; est. $0.25 / $1.50 / $10 per review by effort level <span class="sr">[S27][S29]</span></td>
+          <td><b>Policy:</b> Instructions files: <code>copilot-instructions.md</code>, path-scoped <code>*.instructions.md</code>, <code>AGENTS.md</code>, skills &nbsp;<b>Fit:</b> Native to GitHub, no extra vendor; approval is a side feature, not the pitch</td>
+        </tr>
+        <tr>
+          <td><b>CodeRabbit</b></td>
+          <td>Yes — 1-click fixes, "Finishing Touches", auto-fix PRs</td>
+          <td><b>Approves</b> once its comments resolve; <b>merges</b> low-risk PRs via Triage rules on Team+ — the only vendor here that documents merging <span class="sr">[S30]</span></td>
+          <td>$24 / $48 / $72 per user/mo by tier (Essentials / Team / Advanced) as listed; $0.25 per extra reviewed file <span class="sr">[S30]</span></td>
+          <td><b>Policy:</b> <code>.coderabbit.yaml</code> + org overrides + Triage rules &nbsp;<b>Fit:</b> Widest host coverage: GitHub, GitLab (incl. self-managed), Bitbucket, Azure DevOps</td>
+        </tr>
+        <tr>
+          <td><b>Greptile</b></td>
+          <td>No — hands fixes to Claude Code, Codex, Cursor, Devin</td>
+          <td><b>Approves: beta</b>, gated on a clean 5/5 review and a risk ceiling; no merge <span class="sr">[S31]</span></td>
+          <td>Free 50 credits; Pro $1/credit, no seat fee; Enterprise custom <span class="sr">[S31]</span></td>
+          <td><b>Policy:</b> <code>.greptile/config.json</code> + <code>rules.md</code>, cascading per directory &nbsp;<b>Fit:</b> Repo-graph indexing; self-host and air-gap options; SOC 2 Type II</td>
+        </tr>
+        <tr>
+          <td><b>Graphite</b> (ex-"Diamond")</td>
+          <td>Yes — suggested fixes, commit from chat</td>
+          <td><b>No documented auto-approve or auto-merge</b> in current AI-review docs <span class="sr">[S32]</span></td>
+          <td>Hobby free; Starter $20/user/mo; Team $40/user/mo (annual) <span class="sr">[S32]</span></td>
+          <td><b>Policy:</b> Dashboard rules and exclusions; no repo config file found &nbsp;<b>Fit:</b> GitHub only; strongest on stacked PRs and merge queue, not approval</td>
+        </tr>
+        <tr>
+          <td><b>Qodo</b> (ex-Merge)</td>
+          <td>Yes — <code>enable_auto_fix</code>, opens a new PR by default</td>
+          <td><b>Approves: Research Preview</b>, explicitly not for production-critical use; does not bypass other approvals; no merge <span class="sr">[S33]</span></td>
+          <td>No free tier; Pro Team $30 credit-based ($0.015/credit); Enterprise custom <span class="sr">[S33]</span></td>
+          <td><b>Policy:</b> <code>.pr_agent.toml</code> + portal rule system, approval guards by repo/path/author &nbsp;<b>Fit:</b> Broadest host list: GitHub, GitLab, Bitbucket, Azure DevOps, Gerrit</td>
+        </tr>
+        <tr>
+          <td><b>Sourcery</b></td>
+          <td>No — suggestion blocks applied by a human click</td>
+          <td><b>Approves: opt-in</b> ("Let Sourcery approve pull requests"), and it counts toward branch protection; no merge <span class="sr">[S34]</span></td>
+          <td>Free for public repos incl. auto-approve; Pro $15/user/mo; Team $30; Enterprise custom <span class="sr">[S34]</span></td>
+          <td><b>Policy:</b> Dashboard review rules + path filters; no repo YAML found &nbsp;<b>Fit:</b> Cheapest route to a real approving review; also does security scanning</td>
+        </tr>
+        <tr>
+          <td><b>Ellipsis</b></td>
+          <td>Separate coding agents open PRs; reviewers are read-only</td>
+          <td><b>Approves: configurable</b> via <code>on_pass: approve</code>; guards on stopped/failed/budget-exceeded reviews; no merge <span class="sr">[S35]</span></td>
+          <td>Tokens at cost + 10%, $0/seat, $0.142/vCPU-hour; no free tier <span class="sr">[S35]</span></td>
+          <td><b>Policy:</b> <code>.ellipsis/code-review.yaml</code>, up to 64 custom reviewers each with own prompt and model &nbsp;<b>Fit:</b> Most explicit approval semantics; now positioned as managed coding agents</td>
+        </tr>
+        <tr>
+          <td><b>Build your own</b></td>
+          <td>Yes, whatever you write — Claude API or Agent SDK in a GitHub Action</td>
+          <td>Whatever you implement; approval is one API call plus your own guard code</td>
+          <td>API tokens at list price; plus engineering time to build and maintain</td>
+          <td><b>Policy:</b> Any format you choose; typically a YAML file in the repo &nbsp;<b>Fit:</b> No vendor lock-in, full audit control, works on any host with an API. Costs you the guard rails, the verification step and the maintenance</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>How to read the comparison</h3>
+  <ul>
+    <li><b>Approval is no longer a moat.</b> Copilot, CodeRabbit, Greptile, Qodo, Sourcery and Ellipsis all ship an approval path. What differs is how conservative the default is: GitHub's enterprise default is "Disabled everywhere" <span class="sr">[S28]</span>, Greptile gates on a perfect score <span class="sr">[S31]</span>, Qodo labels its own version a research preview <span class="sr">[S33]</span>.</li>
+    <li><b>Merging is rarer than approving.</b> Only CodeRabbit documents unattended merging, and only with Triage rules on Team or above <span class="sr">[S30]</span>. Everything else stops at the approval.</li>
+    <li><b>Policy as a committed file is Ship's real invention.</b> CodeRabbit, Greptile, Qodo and Ellipsis have config files; Graphite and Sourcery configure in a dashboard. Only Ship expresses <em>who must approve which paths, and when Claude may substitute for a person</em> in that file.</li>
+    <li><b>Price transparency is better everywhere else.</b> Copilot publishes per-review estimates <span class="sr">[S27]</span>; CodeRabbit, Sourcery and Graphite publish seat prices; Greptile and Qodo publish credit rates. Ship publishes none, which is the single clearest procurement disadvantage in this table.</li>
+    <li><b>Host coverage favours the incumbents.</b> Ship is GitHub-only; CodeRabbit and Qodo cover four hosts, Greptile five <span class="sr">[S30][S31][S33]</span>. If any part of our estate is on GitLab or Bitbucket, Ship is not a whole-estate answer.</li>
+  </ul>
+  <div class="note">
+    <span class="h">If the goal is "review plus fixes" rather than "AI approves"</span>
+    <p>The cheaper, lower-risk path today is Copilot code review on an existing GitHub plan, or CodeRabbit at $24–48 per user. Both deliver most of the review and fix value without putting an approval agent on the merge path. Ship should be justified by the approval policy specifically, or not at all.</p>
+  </div>
+</section>
+
+<!-- ============================ 10 ============================ -->
+<section id="s10">
+  <h2><span class="num">Section 10</span>Sai's questions</h2>
+
+  <h3 id="s101">10.1 Using Claude Ship on a Teams subscription</h3>
+  <p><b>Direct answer.</b> Ship is included on Team plans in the sense that Team organisations are permitted to turn it on — that is stated on the launch page, the product page and three docs pages <span class="sr">[S1][S2][S3]</span>. It is <em>not</em> included in the seat price. It is billed separately on token consumption, which means the correct mental model is "Team gives you the right to use it; usage credits pay for it".</p>
+  <div class="tw">
+    <table>
+      <thead><tr><th style="width:210px">Question</th><th>What is verifiable today</th><th style="width:100px">Status</th></tr></thead>
+      <tbody>
+        <tr><td>Is Ship in Claude Team plans?</td><td>Yes. "Claude Ship is available on Claude Team and Enterprise plans for repositories on GitHub" <span class="sr">[S1]</span>. Product page repeats it <span class="sr">[S2]</span>.</td><td><span class="chip v">Verified</span></td></tr>
+        <tr><td>Does it need a Premium seat?</td><td>No seat tier is named anywhere. The pricing page lists no Ship feature under Standard or Premium seats at all — Ship appears only as a footer link <span class="sr">[S17]</span>. Seat tier appears irrelevant; usage is what is metered.</td><td><span class="chip p">No requirement found</span></td></tr>
+        <tr><td>Separate billing?</td><td>Yes. "Billed on token usage through usage credits, separately from your plan's included usage", billed to the organisation <span class="sr">[S11]</span>.</td><td><span class="chip v">Verified</span></td></tr>
+        <tr><td>Usage limits</td><td>No published rate card. Admins set monthly spend limits per service and reviews skip when the limit is reached <span class="sr">[S11]</span>. The org also needs usage credits switched on, since Approvals billing "can start, and continues, while usage credits are turned off" <span class="sr">[S10]</span>.</td><td><span class="chip p">Cap yes, price no</span></td></tr>
+        <tr><td>Admin controls</td><td>Owner role required; per-repository enablement; org-wide off switch; separate caps for Review and Steward <span class="sr">[S7][S11]</span>.</td><td><span class="chip v">Verified</span></td></tr>
+        <tr><td>SSO</td><td>Single sign-on is listed as a Team plan feature <span class="sr">[S17]</span>.</td><td><span class="chip v">Verified</span></td></tr>
+        <tr><td>Free credits</td><td>Enterprise only. $10,000–$50,000 by active Claude Code seats; Team plans explicitly excluded <span class="sr">[S16]</span>.</td><td><span class="chip v">Verified</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p><b>What is genuinely unclear, and must go to Anthropic:</b> whether a Team organisation can purchase usage credits at all, and at what rate; what the effective price per Standard review is at a given repository size; whether Approvals classifiers bill at the same rate as review tokens; and whether Team organisations inherit the same spend-limit granularity as Enterprise. These are commercial, not technical, gaps — the docs are consistent and clear about the mechanics.</p>
+  <p><b>Practical reading for us:</b> on a Team plan we can start immediately with a spend cap and no procurement cycle. The only question we cannot answer from public sources is the actual monthly number, which the pilot answers better than a price list would.</p>
+
+  <h3 id="s102">10.2 Effect on our development and release process</h3>
+  <div class="tw">
+    <table>
+      <thead><tr><th style="width:110px">Stage</th><th>What changes</th><th style="width:150px">Where waiting time goes</th><th style="width:150px">Human still required</th></tr></thead>
+      <tbody>
+        <tr><td>Coding</td><td>Nothing. Unchanged.</td><td>—</td><td>Yes, entirely</td></tr>
+        <tr><td>PR opened</td><td><code>/ship</code> can commit, push and open the PR from the terminal <span class="sr">[S13]</span>.</td><td>Small, minutes</td><td>Author decides when to ship</td></tr>
+        <tr><td>Review</td><td>Automated review within minutes instead of hours; findings ranked and inline <span class="sr">[S4]</span>.</td><td><b>Largest single saving</b> — the queue for a human reviewer disappears for routine changes</td><td>Only for PRs the policy names</td></tr>
+        <tr><td>Fixes</td><td>PR Steward pushes commits for failing checks, conflicts, feedback <span class="sr">[S5]</span>.</td><td>Round-trip latency collapses from days to hours</td><td>Review of the fix if it touches sensitive paths</td></tr>
+        <tr><td>Approval</td><td>Approvals applies the policy; may post an approving review <span class="sr">[S7]</span>.</td><td>Removes the "find a person" wait</td><td>Policy-defined; can be none</td></tr>
+        <tr><td>Merge</td><td>Unchanged in the <code>/ship</code> flow — you merge <span class="sr">[S13]</span>. Auto-merge or a merge queue can complete it with nobody acting <span class="sr">[S9]</span>.</td><td>Seconds</td><td>Depends on branch rules</td></tr>
+        <tr><td>CI</td><td>Unchanged, and must stay a required check <span class="sr">[S7]</span>.</td><td>No change</td><td>Nothing automated here</td></tr>
+        <tr><td>Release</td><td>Not touched at all.</td><td>No change</td><td>QA, staging, go/no-go</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>The honest summary: Ship compresses the author↔reviewer↔CI loop hard, and does nothing for the release side. If our release cadence is limited by QA, staging availability or a go/no-go meeting, this product will make PRs finish faster and then queue at the same door.</p>
+
+  <h3 id="s103">10.3 Can it enable one release every five days?</h3>
+  <p>First, the premise. One release every five days is about six releases a month, or 73 a year. That is a real cadence, but it is not an extreme one — it sits in the "high" band of common deployment-frequency benchmarks rather than the "elite, on-demand" band. The question is therefore not whether it is achievable, but whether Ship is the lever.</p>
+
+  <h4>Cycle-time model, with assumptions stated</h4>
+  <p>Assumptions: a working day of 7.5 hours; a single product with one release train; median PR sizes; the baseline figures are a composite of typical review-latency behaviour, not measurements of our own repos. Change the numbers and the conclusion should be re-checked — the model is deliberately simple enough to argue with. One anchor for "median PR size": the industry norm is 200–400 lines per review at under 300–500 lines per hour <span class="sr">[S40]</span>, so any repo routinely exceeding that is already outside the regime this model assumes.</p>
+  <div class="tw">
+    <table>
+      <thead><tr><th>Stage</th><th class="num">Baseline (days)</th><th class="num">With Ship (days)</th><th>Why the change</th></tr></thead>
+      <tbody>
+        <tr><td>Author finishes change → PR open</td><td class="num">0.50</td><td class="num">0.30</td><td><code>/ship</code> removes commit/push/open friction</td></tr>
+        <tr><td>Wait for first substantive review</td><td class="num">0.60</td><td class="num">0.05</td><td>AI review in minutes, not a queue</td></tr>
+        <tr><td>Address review + re-review rounds</td><td class="num">0.90</td><td class="num">0.20</td><td>Steward pushes fixes without round trips</td></tr>
+        <tr><td>CI red → green</td><td class="num">0.30</td><td class="num">0.15</td><td>Steward fixes failing checks</td></tr>
+        <tr><td>QA / staging verification</td><td class="num">1.50</td><td class="num">1.20</td><td>Barely touched — human testing remains</td></tr>
+        <tr><td>Release approval + rollout</td><td class="num">1.00</td><td class="num">0.60</td><td>Only if approval automation extends to release gates, which it does not by default</td></tr>
+        <tr><td><b>Total lead time</b></td><td class="num"><b>4.80</b></td><td class="num"><b>2.50</b></td><td><b>−2.3 days, −48%</b></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Review-related time falls from 1.50 days to 0.25 — a 1.25-day cut. That is the entire honest claim. The 2.5 days that remain split as 1.8 for QA, staging and release mechanics, 0.25 for the review that still happens, and 0.45 for authoring the change and getting CI green.</p>
+
+  <h4>What the model implies</h4>
+  <ul>
+    <li><b>Five-day releases become possible if lead time is under five days.</b> At 4.8 days baseline we are already marginal; at 2.5 days we have slack. So Ship helps — but note that even the baseline is nominally compatible with a five-day cadence.</li>
+    <li><b>Cadence is bound by the train, not the PR.</b> With lead time at 5 days and a 5-day train, the pipeline runs at 100% utilisation: any single slow PR delays a release. At 2.5 days it runs at 50%, which is where a cadence becomes reliable rather than lucky. That, not raw speed, is the real benefit.</li>
+    <li><b>The bottleneck moves to QA and staging.</b> Once PRs finish in 2.5 days, a 1.2-day QA gate plus a 0.6-day release approval is 72% of the remaining lead time. Automating review further buys almost nothing.</li>
+    <li><b>Six releases a month needs more than a faster PR loop.</b> It needs release automation, a small batch size, a rollback path and feature flags so that "release" stops being an event.</li>
+  </ul>
+  <h4>What the research says about those assumptions</h4>
+  <ul>
+    <li><b>Our 0.6-day wait for first review is optimistic.</b> Google's log study of 9 million reviewed changes found median end-to-end review under 4 hours, with small changes getting first feedback in under 1 hour <span class="sr">[S39]</span> — but that is a monorepo culture with a median change size of 24 lines. Medians of 15–24 hours to approval are reported for Microsoft, AMD and Chrome OS in the same literature <span class="sr">[S39]</span>. If our baseline is closer to 24 hours, Ship's saving is larger than the model shows.</li>
+    <li><b>Review speed is one of the few levers with a measured association to delivery performance.</b> DORA reports that teams with faster code reviews have 50% higher software delivery performance <span class="sr">[S38]</span> — an association, not a causal claim, and DORA itself warns that speed gains do not help if the constraint is elsewhere.</li>
+    <li><b>AI adoption has not reliably improved delivery outcomes.</b> In 2024, a 25% increase in AI adoption was associated with a 1.5% <em>reduction</em> in throughput and a 7.2% reduction in stability, even while code review speed rose 3.1% <span class="sr">[S36]</span>. The 2025 report reversed the throughput finding but kept the instability finding, and found no evidence that instability's harms are moderated <span class="sr">[S37]</span>.</li>
+    <li><b>DORA's own explanation is batch size.</b> Faster generation without smaller batches inflates PR size and shifts the burden onto reviewers; small batches are named as the countermeasure to AI-induced instability <span class="sr">[S44]</span>. This is the strongest argument for pairing Ship with a hard PR-size limit.</li>
+    <li><b>Expect a verification tax.</b> DORA's 2025 qualitative work finds time saved in creation is frequently re-allocated to auditing, and reviewer cognitive load rises because the reviewer is still expected to check every line <span class="sr">[S45]</span>. Ship moves work; it does not delete all of it.</li>
+  </ul>
+
+  <div class="note warn">
+    <span class="h">Verdict on the five-day goal</span>
+    <p>Ship can plausibly remove one to one-and-a-half days of waiting per pull request, and that is enough to make a five-day cadence comfortable instead of marginal. It cannot deliver the cadence on its own. The binding constraints after adoption are QA capacity, a staging environment that is always available, and a release decision that does not need a meeting.</p>
+  </div>
+</section>
+
+<!-- ============================ 11 ============================ -->
+<section id="s11">
+  <h2><span class="num">Section 11</span>Benefit and risk assessment</h2>
+
+  <h3>Benefits and the KPIs that would prove them</h3>
+  <div class="tw">
+    <table>
+      <thead><tr><th style="width:220px">Benefit</th><th>KPI</th><th style="width:200px">How to measure in the pilot</th></tr></thead>
+      <tbody>
+        <tr><td>Faster first feedback</td><td>Time to first review</td><td>PR timestamps: opened → first review comment, median and p90</td></tr>
+        <tr><td>Shorter PR cycle</td><td>PR cycle time</td><td>Opened → merged, split by PR size band</td></tr>
+        <tr><td>Less reviewer load</td><td>Review requests per engineer per week</td><td>GitHub review-request counts before and after</td></tr>
+        <tr><td>Fewer escaped defects</td><td>Change failure rate</td><td>Reverts and hotfixes per 100 merged PRs</td></tr>
+        <tr><td>Faster delivery</td><td>Deployment frequency</td><td>Releases per month, and the variance between them</td></tr>
+        <tr><td>Reviewer satisfaction</td><td>Self-reported review toil</td><td>Two-question survey at pilot start and end</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Costs and risks</h3>
+  <ul>
+    <li><b>Unforecastable spend.</b> No list price, and "after every push" mode multiplies cost by push count <span class="sr">[S11]</span>. Mitigation: cap first, once-per-PR mode, measure cost per merged PR.</li>
+    <li><b>False confidence.</b> A clean review does not mean clean code — Anthropic says so directly <span class="sr">[S4]</span>. Over time, "Claude found nothing" becomes a reason not to look.</li>
+    <li><b>Verification tax and batch inflation.</b> The time saved writing code tends to reappear as auditing work for the reviewer, and faster generation without a batch-size limit produces larger PRs that are harder to review <span class="sr">[S44][S45]</span>. Mitigation: a hard PR-size limit enforced alongside the pilot.</li>
+    <li><b>Review quality drift.</b> If AI review substitutes for human review on routine PRs, institutional knowledge stops transferring. Junior engineers learn less from reading review threads.</li>
+    <li><b>Same-vendor loop.</b> If Claude writes, fixes and approves, the only remaining check is the test suite. The most common community objection, and a fair one <span class="sr">[S21]</span>.</li>
+    <li><b>Vendor lock-in.</b> Policy lives in a vendor-specific file format and the agents run on Anthropic infrastructure. Migration means rebuilding both.</li>
+    <li><b>Security exposure.</b> Workflow-write permission plus instruction-following from PR text is a prompt-injection surface <span class="sr">[S6][S9]</span>.</li>
+    <li><b>Compliance scrapes.</b> ZDR, HIPAA and CMEK organisations are excluded outright <span class="sr">[S1]</span>; a change in our compliance posture would force a rebuild.</li>
+  </ul>
+</section>
+
+<!-- ============================ 12 ============================ -->
+<section id="s12">
+  <h2><span class="num">Section 12</span>Recommended pilot plan</h2>
+  <div class="tw">
+    <table>
+      <thead><tr><th style="width:110px">Week</th><th>Scope</th><th style="width:230px">Exit criterion</th></tr></thead>
+      <tbody>
+        <tr><td>0</td><td>Cap set; app installed; one repository added; Review runs = once after PR creation; PR Steward off</td><td>First review posted successfully</td></tr>
+        <tr><td>1</td><td>Code Review on all PRs in the pilot repo. Record cost per review and findings accepted/rejected</td><td>At least 20 PRs reviewed; cost per PR known</td></tr>
+        <tr><td>2</td><td>PR Steward in Manual mode; developers invoke it deliberately</td><td>At least 5 Steward sessions; no unexplained commits</td></tr>
+        <tr><td>3–4</td><td>Approvals policy in observe mode on 2–3 repos, with <code>claude/code_review</code> named in a rule. No branch-rule changes</td><td>Observe-mode verdicts compared against human decisions on 30+ PRs</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Success criteria</h3>
+  <ul>
+    <li>Median time to first review falls by at least 50% in the pilot repo.</li>
+    <li>Fewer than 1 in 5 AI findings is judged noise by the reviewer who triages it.</li>
+    <li>Cost per merged PR stays inside the cap, and the projected monthly figure at full rollout is affordable.</li>
+    <li>Observe-mode approval verdicts agree with human decisions on at least 95% of PRs, with every disagreement on the conservative side.</li>
+    <li>No revert or hotfix attributable to a Steward push.</li>
+  </ul>
+
+  <h3>Go/no-go rule</h3>
+  <p>Proceed to enforced Approvals only if all five criteria hold and the security reviewer signs off on the workflow permission. If agreement is below 95%, extend observe mode rather than loosening policy — an approval agent that is right 90% of the time is a 10% incident rate on every merge. If cost per PR is not forecastable after four weeks, stop: token pricing with no published rate card is not something to scale on a guess.</p>
+  <div class="note stop">
+    <span class="h">Non-negotiable</span>
+    <p>Do not enable a policy with <code>seats: 0</code>, do not admit bots to a <code>from</code> list, and do not put auto-merge or a merge queue behind an unenforced check. Those three are the documented paths to a merge nobody reviewed <span class="sr">[S9]</span>.</p>
+  </div>
+</section>
+
+<!-- ============================ 13 ============================ -->
+<section id="s13">
+  <h2><span class="num">Section 13</span>What users are saying</h2>
+  <p>Three live threads, all from the first 24 hours. Treat as anecdote: the sample is small, self-selected, and heavily weighted toward people who dislike the idea.</p>
+  <div class="tw">
+    <table>
+      <thead><tr><th style="width:190px">Thread</th><th style="width:110px">Engagement</th><th>Recurring themes</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><a href="https://news.ycombinator.com/item?id=50618513">Hacker News — "Claude Ship"</a> <span class="sr">[S19]</span></td>
+          <td>68 points, 23 comments</td>
+          <td>Sceptical and jokey. Recurring: the recursion of AI writing, reviewing and merging its own work; "who is this for?" versus build-it-yourself; a concrete bug — the new <code>/ship</code> command collides with users' own custom <code>/ship</code> skills. One substantive positive: using a different vendor's model to review code written by another is "a pretty good separation of responsibilities".</td>
+        </tr>
+        <tr>
+          <td><a href="https://www.reddit.com/r/ClaudeAI/comments/1y44lsn/">r/ClaudeAI — launch thread</a> <span class="sr">[S21]</span></td>
+          <td>276 points, 37 comments</td>
+          <td>Split, leaning sceptical. Recurring: don't let Claude review its own homework; prefer a second model family for review; vendor lock-in versus GitHub Actions; a well-received warning that auto-merge plus a permissive policy means shipping with zero human oversight; and a SOC 2/change-management objection — "the same vendor's model wrote it, fixed it and approved it".</td>
+        </tr>
+        <tr>
+          <td><a href="https://www.reddit.com/r/ClaudeCode/comments/1y42xuf/">r/ClaudeCode — launch thread</a> <span class="sr">[S20]</span></td>
+          <td>86 points, 91% upvoted</td>
+          <td>Practical. Recurring: the <code>/ship</code> name collision (users renaming their own skills); annoyance that it is Team/Enterprise-only and separately billed; several "I already built this myself" and "I'll wait for it on my plan" comments.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <h4>Recurring praise</h4>
+  <p>Almost none, and that itself is a signal. The positives are narrow: PR Steward fixing CI and merge conflicts is the piece most people want to try; the policy-file design is respected; and the separation of fixer from approver is noticed and credited by at least one careful commenter.</p>
+  <h4>Recurring complaints</h4>
+  <ol>
+    <li><b>Self-review loop</b> — the most repeated objection across all three threads.</li>
+    <li><b>Billing opacity</b> — no published per-review price, and observe mode is billed.</li>
+    <li><b>The <code>/ship</code> namespace collision</b> — a real, reproducible papercut reported independently in two threads.</li>
+    <li><b>Exclusions</b> — ZDR and HIPAA organisations are locked out, noted with disappointment on HN.</li>
+    <li><b>Auto-merge hazard</b> — users read the docs and flagged it before Anthropic's marketing did.</li>
+  </ol>
+  <h4>Promotional content to discount</h4>
+  <p>Several launch-week "reviews" are affiliate-style summarisers or vendors building competing products (one thread comment links a competing service). The CodeRabbit mention in r/ClaudeAI reads as an organic recommendation but could equally be advocacy; it is not evidence either way.</p>
+</section>
+
+<!-- ============================ 14 ============================ -->
+<section id="s14">
+  <h2><span class="num">Section 14</span>Red flags and green flags</h2>
+  <div class="flags">
+    <div>
+      <h4 style="margin-top:0">Green</h4>
+      <ul>
+        <li>The fixer explicitly cannot approve or merge — a genuine separation-of-duties decision, not a marketing line <span class="sr">[S5]</span>.</li>
+        <li>Policy is a version-controlled file in the repo, reviewable like code, with strictest-rule-wins combination <span class="sr">[S8]</span>.</li>
+        <li>Observe mode exists and is the documented starting point, even though it is billed <span class="sr">[S7]</span>.</li>
+        <li>Anthropic documents the ways a PR can merge without a human, in its own docs, rather than hiding them <span class="sr">[S9]</span>.</li>
+        <li>Commercial plans do not train on your code by default <span class="sr">[S14]</span>.</li>
+        <li>Existing branch protection and required checks remain authoritative <span class="sr">[S1]</span>.</li>
+        <li>Code Review was already generally available before this launch — the beta risk sits in the two newer agents <span class="sr">[S1]</span>.</li>
+        <li>A policy edit cannot govern its own pull request: open PRs keep using the default-branch rules until the change merges <span class="sr">[S8]</span>.</li>
+      </ul>
+    </div>
+    <div class="bad">
+      <h4 style="margin-top:0">Red</h4>
+      <ul>
+        <li>Token pricing with no published rate card, and metered observe mode — you pay to find out what the policy would have decided <span class="sr">[S11]</span>.</li>
+        <li>Any user who can merge a policy file can enable Approvals; the only brake is an org-wide Owner off-switch <span class="sr">[S7]</span>.</li>
+        <li>A subdirectory policy can ask for <em>less</em> than the root policy <span class="sr">[S8]</span>.</li>
+        <li>Adding a policy file can silently disable automatic Code Review unless a rule names <code>claude/code_review</code> <span class="sr">[S7]</span>.</li>
+        <li>Workflow-write permission is grantable to an agent that follows instructions found in PR text <span class="sr">[S6]</span>.</li>
+        <li>The only performance number is self-reported by a single internal team with no control group <span class="sr">[S1]</span>.</li>
+        <li>Product is one day old with no independent evaluation; two of three agents are beta <span class="sr">[S1]</span>.</li>
+        <li>Excluded for ZDR, HIPAA and CMEK organisations — a hard architectural limit, not a setting <span class="sr">[S1]</span>.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ 15 ============================ -->
+<section id="s15">
+  <h2><span class="num">Section 15</span>Open questions</h2>
+  <h3>For Anthropic (sales or support)</h3>
+  <ol>
+    <li>Can a Team organisation purchase usage credits for Ship, and at what effective rate? What does a Standard review cost on a 500-line PR?</li>
+    <li>Are Approvals classifiers billed at the same token rate as review, and is there a per-classifier budget control?</li>
+    <li>What is the retention period for code and PR content processed by Code Review specifically — as distinct from Claude Code session data?</li>
+    <li>Is there a published false-positive or miss rate for Code Review, and is there an evaluation set we can run our own repos against?</li>
+    <li>How are large PRs and monorepos handled — truncation, chunking, or a hard size limit?</li>
+    <li>Does workflow-write permission have to be granted for PR Steward to function, or only for specific fixes?</li>
+    <li>What audit trail exists for an auto-approved PR that is later reverted — is there a compliance-API record of the policy verdict?</li>
+    <li>Is there a roadmap item for multi-vendor review, or for pinning specific models per agent?</li>
+  </ol>
+  <h3>For us</h3>
+  <ol>
+    <li>Which repositories are eligible at all, given our current branch rules and CODEOWNERS?</li>
+    <li>What fraction of our PRs would a conservative policy actually auto-approve? If the answer is "almost none", the value is in review and fixes, not approvals.</li>
+    <li>Do we have a rollback path fast enough to tolerate a wrong auto-approval once a month?</li>
+    <li>Would we accept the same-vendor review loop, or do we want review from a different model family — which changes the entire tool choice?</li>
+  </ol>
+</section>
+
+<!-- ============================ 16 ============================ -->
+<section id="s16">
+  <h2><span class="num">Section 16</span>Source log</h2>
+  <p>All URLs opened in a live browser session on 24 November 2026 unless marked otherwise. Type: O = official vendor/primary, I = independent, C = community.</p>
+  <div class="tw">
+    <table>
+      <thead><tr><th style="width:56px">ID</th><th style="width:70px">Type</th><th>Source and what it contributed</th></tr></thead>
+      <tbody>
+        <tr><td>S1</td><td>O</td><td>claude.com/resources/articles/introducing-claude-ship — launch post, dated 23 Nov 2026. Components, availability, billing model, internal metrics, credits offer.</td></tr>
+        <tr><td>S2</td><td>O</td><td>claude.com/product/claude-ship — product page. Capabilities, setup sequence, FAQs on pricing and eligibility.</td></tr>
+        <tr><td>S3</td><td>O</td><td>code.claude.com/docs/en/claude-ship — docs hub. Agent summary, plans and billing, setup order, observe-mode guidance.</td></tr>
+        <tr><td>S4</td><td>O</td><td>code.claude.com/docs/en/code-review — availability, four-stage review pipeline, review levels, model selection statement, accuracy caveat.</td></tr>
+        <tr><td>S5</td><td>O</td><td>code.claude.com/docs/en/pr-steward — what Steward fixes, start conditions, skip rules, non-approval design.</td></tr>
+        <tr><td>S6</td><td>O</td><td>code.claude.com/docs/en/pr-steward-security — GitHub identity, permission scopes, credential handling, cloud session.</td></tr>
+        <tr><td>S7</td><td>O</td><td>code.claude.com/docs/en/approvals — check behaviour, who can enable, merges-without-human-review section, review-suppression caveat.</td></tr>
+        <tr><td>S8</td><td>O</td><td>code.claude.com/docs/en/approvals-policy — policy file reference, verdicts, overrides, nesting, strictest-wins.</td></tr>
+        <tr><td>S9</td><td>O</td><td>code.claude.com/docs/en/approvals-github-rules — interaction with required reviews, CODEOWNERS, merge queues; enumerated no-human merge paths.</td></tr>
+        <tr><td>S10</td><td>O</td><td>code.claude.com/docs/en/approvals-setup — prerequisites, usage credits, spend-limit controls, app ID 1236702.</td></tr>
+        <tr><td>S11</td><td>O</td><td>code.claude.com/docs/en/code-review-costs — billing mechanics, run-frequency multiplier, spend limits, no flat price.</td></tr>
+        <tr><td>S12</td><td>O</td><td>code.claude.com/docs/en/code-review-setup — setup roles, GitHub App installation, no workflow files.</td></tr>
+        <tr><td>S13</td><td>O</td><td>code.claude.com/docs/en/ship-command — /ship and /steward flow, local-only, merge is manual.</td></tr>
+        <tr><td>S14</td><td>O</td><td>code.claude.com/docs/en/data-usage — training policy for commercial plans, retention, VM isolation, credential proxy, encryption.</td></tr>
+        <tr><td>S15</td><td>O</td><td>trust.anthropic.com — compliance matrix (SOC 2 Type 2, ISO 27001, ISO 42001, CSA Star, HIPAA by plan).</td></tr>
+        <tr><td>S16</td><td>O</td><td>support.claude.com — Claude Ship promotional credits for Enterprise: $10k–$50k by Claude Code seats, window and exclusions.</td></tr>
+        <tr><td>S17</td><td>O</td><td>claude.com/pricing — Team and Enterprise seat pricing, SSO, admin controls, audit logs, SCIM, Compliance API; no Ship line item in any tier.</td></tr>
+        <tr><td>S18</td><td>O</td><td>github.com/apps/claude — the Claude GitHub App, developer anthropics.</td></tr>
+        <tr><td>S19</td><td>C</td><td>news.ycombinator.com item 50618513 — 68 points, 23 comments. Scepticism, /ship collision, cross-vendor review idea.</td></tr>
+        <tr><td>S20</td><td>C</td><td>reddit.com/r/ClaudeCode/comments/1y42xuf — 86 points, 91% upvoted. Practical complaints, naming collision, billing.</td></tr>
+        <tr><td>S21</td><td>C</td><td>reddit.com/r/ClaudeAI/comments/1y44lsn — 276 points, 37 comments. Self-review objection, lock-in, auto-merge warning, SOC 2 concern.</td></tr>
+        <tr><td>S22</td><td>I</td><td>techcrunch.com — launch coverage, beta framing, Code Review GA.</td></tr>
+        <tr><td>S23</td><td>I</td><td>thenewstack.io — three-agent description, policy framing.</td></tr>
+        <tr><td>S24</td><td>I</td><td>theverge.com — review, fix, approve summary.</td></tr>
+        <tr><td>S25</td><td>I</td><td>itpro.com — reports Anthropic's caveat that agents may miss bugs and vulnerabilities.</td></tr>
+        <tr><td>S26</td><td>I</td><td>helpnetsecurity.com — Code Review GA plus two beta agents.</td></tr>
+        <tr><td>S27</td><td>O</td><td>docs.github.com/en/copilot/concepts/agents/code-review — Copilot review capabilities, effort levels, per-review cost estimates, "always validate" caveat.</td></tr>
+        <tr><td>S28</td><td>O</td><td>docs.github.com/en/copilot/how-tos/copilot-on-github/set-up-copilot/configure-code-review — auto-approval toggles, file-glob limit, enterprise default "Disabled everywhere".</td></tr>
+        <tr><td>S29</td><td>O</td><td>docs.github.com/en/copilot/get-started/plans — Copilot Business and Enterprise seat pricing and credit allowances.</td></tr>
+        <tr><td>S30</td><td>O</td><td>coderabbit.ai/pricing + docs.coderabbit.ai — plan prices, per-file overage, Triage merge rules, <code>request_changes_workflow</code> behaviour.</td></tr>
+        <tr><td>S31</td><td>O</td><td>greptile.com/pricing + docs (auto-approve-prs, greptile-config) — credit pricing, beta auto-approve gated on 5/5, risk ceiling, no merge.</td></tr>
+        <tr><td>S32</td><td>O</td><td>graphite.dev/pricing + docs/ai-reviews — current plans and AI review scope; Diamond name retired on the vendor's launch blog (banner dated 10/08/2025).</td></tr>
+        <tr><td>S33</td><td>O</td><td>qodo.ai/pricing + docs.qodo.ai (configuration, approval workflows) — credit pricing, auto-approve Research Preview, fixer behaviour.</td></tr>
+        <tr><td>S34</td><td>O</td><td>sourcery.ai/pricing + docs.sourcery.ai — auto-approve opt-in including on free public repos, plan prices, review caps.</td></tr>
+        <tr><td>S35</td><td>O</td><td>ellipsis.dev/pricing + docs.ellipsis.dev — consumption pricing, <code>on_pass: approve</code> semantics and guards.</td></tr>
+        <tr><td>S36</td><td>I</td><td>dora.dev 2024 Accelerate State of DevOps (PDF) — 25% AI adoption associated with −1.5% throughput and −7.2% stability; +3.1% code review speed; "faster reviews do not equate to better review".</td></tr>
+        <tr><td>S37</td><td>I</td><td>DORA 2025 State of AI-assisted Software Development (PDF) — throughput effect reverses in 2025, instability persists; no moderating effect of instability.</td></tr>
+        <tr><td>S38</td><td>I</td><td>dora.dev 2023 report — "Teams with faster code reviews have 50% higher software delivery performance" (association, not causation).</td></tr>
+        <tr><td>S39</td><td>I</td><td>Sadowski et al., "Modern Code Review: A Case Study at Google", ICSE-SEIP 2018 — 9 million reviewed changes; median end-to-end review under 4 hours; small changes reviewed within ~1 hour; enterprise medians of 15–24 hours to approval cited from prior work.</td></tr>
+        <tr><td>S40</td><td>I</td><td>SmartBear/Cisco "11 Best Practices for Peer Code Review" — 200–400 LOC per review, under 300–500 LOC/hour, 60–90 minute sessions. Vendor white paper; treat as convergent practice, not authority.</td></tr>
+        <tr><td>S41</td><td>I</td><td>arXiv 2509.01494, SWR-Bench — 1,000 verified PRs with full project context; mainstream review systems underperform, with low precision (false positives) the stated cause; multi-review aggregation lifts F1 up to 43.67%. Preprint.</td></tr>
+        <tr><td>S42</td><td>I</td><td>arXiv 2611.02566, CR-Bench-v2 (Nutanix) — best systems detect roughly one-third of known defects; usefulness and detection are separate axes. Vendor-authored preprint.</td></tr>
+        <tr><td>S43</td><td>I</td><td>OWASP Top 10 for LLM Applications 2025, LLM01 Prompt Injection — indirect injection via files and repositories; "it is unclear if there are fool-proof methods of prevention".</td></tr>
+        <tr><td>S44</td><td>I</td><td>dora.dev capabilities: working-in-small-batches and trunk-based-development — small batches as the countermeasure to AI-induced instability; slow review inflates batch size.</td></tr>
+        <tr><td>S45</td><td>I</td><td>dora.dev/insights/balancing-ai-tensions — the "verification tax": time saved in creation is re-allocated to auditing, and reviewer cognitive load rises. Qualitative analysis of 1,110 engineer responses.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+    </main>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap">
+    Prepared 24 November 2026 · Research method: live page reads only, no search-snippet citation · Product under review is 1 day old and in beta — re-verify before any purchase decision
+  </div>
+</footer>
+
+</body>
+</html>
